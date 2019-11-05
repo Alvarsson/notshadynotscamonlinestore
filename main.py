@@ -15,6 +15,10 @@ artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
 def kategori():
     return render_template("kategori.html", artiklar = artiklar)
 
+@app.route("/article")
+def article():
+    return render_template("article.html", artiklar = artiklar)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
