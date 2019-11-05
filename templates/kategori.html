@@ -1,0 +1,29 @@
+{% extends "public_template.html" %}
+
+{% block main %}
+
+<h2>Kategori {{ artiklar[0] }}</h2>
+
+<table class="table">
+  <thead> 
+    <tr>
+      <th scope="col">id</th>
+      <th scope="col">Name</th>
+      <th scope="col">Left in Stock</th>
+      <th scope="col">Price</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  {% for item in artiklar %}
+    <tr>
+      <th scope="row">{{ item }}</th>
+      <td>{{ item }}</td>
+      <td>{{ item }}</td>
+      <td>{{ item }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}
