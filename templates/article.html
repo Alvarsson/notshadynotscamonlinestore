@@ -9,12 +9,24 @@
    <h2>This is the name of the article</h2>
   </div>
   <div class="col">
-    <dl class="d-flex flex-wrap">
-    {% for item in artiklar %}
-     <dt class="flex-fill p-2 w-50">Typ:{{ item }}</dt>
-     <dd class="flex-fill p-2 w-50">{{ item }}</dd>
-    {% endfor %}
-    </dl>
+   <table class="table table-striped">
+  <!--    <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">Name</th>
+        </tr>
+      </thead>
+  -->
+      <tbody>
+      {% for item in artiklar %}
+        <tr>
+          <th scope="row">{{ item }}</th>
+          <td>{{ item }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
   </div>
  </div>
 </div>
