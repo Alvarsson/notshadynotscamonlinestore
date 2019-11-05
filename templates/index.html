@@ -1,12 +1,41 @@
-{% extends "public_template.html" %}
+{%extends "public_template.html" %}
 
-{% block main %}
-    <header>
-        <h1>This is a motherfucking website.</h1>
-        <aside>And it's fucking perfect.</aside>
-    </header>
-        
-        <h2>Seriously, what the fuck else do you want?</h2>
-        
-        <p>You probably build websites and think your shit is special. You think your 13 megabyte parallax-ative home page is going to get you some fucking Awwward banner you can glue to the top corner of your site. You think your 40-pound jQuery file and 83 polyfills give IE7 a boner because it finally has box-shadow. Wrong, motherfucker. Let me describe your perfect-ass website:</p>
+
+{%block main %}
+
+<style>
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+            text-align: center;
+        }
+        </style>
+<div class="container"> 
+    
+    <div class="row">
+        <header class="mx-auto"><b>Dagens träd</b></header>
+    </div>
+    <div class="row">
+        <img src="https://arbordayblog.org/wp-content/uploads/2018/06/oak-tree-sunset-iStock-477164218-1080x608.jpg" alt="tree" class="mx-auto" class="img-responsive" width="800" height="300">
+    </div>
+<br>
+    <div class="row">
+        <header class="mx-auto">Kategorier:</header>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-auto">
+        </div>
+    </div>
+</div>
+<div class="container">
+        <table class="table">
+                {% for i in ArrayMedTräd %}
+                <tr>
+                    <th>{{i}}</th>
+                </tr>
+                {% endfor %} 
+            </table>
+</div>
 {% endblock %}
