@@ -1,0 +1,23 @@
+{% extends "public_template.html" %}
+
+{% block main %}
+
+<div class="container">
+ <div class="row">
+  <div class="col">
+	  <img class="mw-100" src="https://i.kym-cdn.com/photos/images/newsfeed/001/231/093/451">
+   <h2>This is the name of the article</h2>
+  </div>
+  <div class="col">
+    <dl class="d-flex flex-wrap">
+    {% for item in artiklar %}
+     <dt class="flex-fill p-2 w-50">Typ:{{ item }}</dt>
+     <dd class="flex-fill p-2 w-50">{{ item }}</dd>
+    {% endfor %}
+    </dl>
+  </div>
+ </div>
+</div>
+
+
+{% endblock %}
