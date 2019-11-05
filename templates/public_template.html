@@ -22,12 +22,9 @@
   </button>
 
   <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
+    <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <a class="nav-link" href="/home">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/bokning">Bokning</a>
+            <a class="nav-link"{% if logged_in %} href="/logout">Logout{% else %} href="/login">Login{% endif %}</a>
         </li>
     </ul>
   </div>
