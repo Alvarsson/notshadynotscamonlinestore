@@ -1,0 +1,71 @@
+{% extends "public_template.html" %}
+
+{% block main %}
+
+
+
+
+<div class="container-fluid">
+
+    <h1>Admin view</h1>
+    <hr>
+    <form action="/admin" class="form-row">
+        <!--</form>method="POST"> ACTION ÄR VILKEN fil SOM KOMMER HANTERA DATAN-->
+
+        <div class="col">
+
+            <input type="Name" class="form-control" id="username" name="username" placeholder="Select a username">
+        </div>
+
+        <div class="col">
+            <input type="Left in Stock" class="form-control" id="password" name="password"
+                placeholder="Create a password">
+        </div>
+
+        <div class="col">
+            <input type="Price" class="form-control" id="password" name="password" placeholder="Create a password">
+        </div>
+
+        <div class="col">
+            <button type="submit" class="btn-primary btn ">Choose file</button>
+            <label>{{filename}}</label>
+        </div>
+
+        <div class="col">
+            <button type="submit" class="btn-primary btn ">Add</button>
+        </div>
+
+
+
+</div>
+
+<form action="/admin">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Left in Stock</th>
+                <th scope="col">Price</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for artikel in artiklar %}
+            <tr>
+                <div class="row">
+                    <th scope="row">ArtikelNummerHÄR</th>
+                    <td>{{ artikel[0] }}</td>
+                    <td>{{ artikel[1] }}</td>
+                    <td>{{ artikel[2] }}</td>
+                    <td><button type="submit" class="btn-primary btn ">Remove</button></td>
+                </div>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
+</div>
+
+{% endblock %}
