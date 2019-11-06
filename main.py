@@ -13,7 +13,11 @@ def home():
 def login():
     return render_template("login.html")
 
+artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
+@app.route("/admin")
+def kategori():
 
+    return render_template("adminview.html", artiklar = artiklar)
 
 artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
 @app.route("/kategori")
