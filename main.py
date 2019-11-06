@@ -28,6 +28,9 @@ def kategori():
 def article():
     return render_template("article.html", artiklar = artiklar)
 
+@app.route("/user")
+def user():
+    return render_template("user.html", artiklar = artiklar)
 
 if __name__ == "__main__":
     app.run(debug=True)
