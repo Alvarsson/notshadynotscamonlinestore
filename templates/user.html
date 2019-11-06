@@ -1,0 +1,52 @@
+{% extends "public_template.html" %}
+
+{% block main %}
+
+<div class="container">
+ <div class="row">
+  <div class="col">
+   <h2>John Doe</h2>
+  </div>
+  <div class="col">
+      <div class="row">
+           <table class="table table-striped">
+              <tbody>
+              {% for item in artiklar %}
+                <tr>
+                  <th scope="row">{{ item }}</th>
+                  <td>{{ item }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <form class="form-inline ml-auto">
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="number" class="sr-only">Number</label>
+                    <input type="number" class="form-control" id="number" placeholder="antal">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Change</button>
+            </form>
+        </div>
+  </div>
+ </div>
+</div>
+
+<div class="container ">
+    <div class="row">
+        <h1>Ordrar</h1>
+    </div>
+    {% for item in artiklar %}
+    <div class="row">
+        {% if loop.index0 % 2 == 0 %}
+        <div class="col bg-light">
+        {% else %}
+        <div class="col bg-secondary text-white">
+        {% endif %}
+            <p>Order {{ loop.index }} {{ item }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
