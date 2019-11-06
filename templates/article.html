@@ -9,27 +9,50 @@
    <h2>This is the name of the article</h2>
   </div>
   <div class="col">
-   <table class="table table-striped">
-  <!--    <thead>
-        <tr>
-          <th scope="col">id</th>
-          <th scope="col">Name</th>
-        </tr>
-      </thead>
-  -->
-      <tbody>
-      {% for item in artiklar %}
-        <tr>
-          <th scope="row">{{ item }}</th>
-          <td>{{ item }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-
+      <div class="row">
+           <table class="table table-striped">
+              <tbody>
+              {% for item in artiklar %}
+                <tr>
+                  <th scope="row">{{ item }}</th>
+                  <td>{{ item }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <form class="form-inline ml-auto">
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="number" class="sr-only">Number</label>
+                    <input type="number" class="form-control" id="number" placeholder="antal">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Buy</button>
+            </form>
+        </div>
   </div>
  </div>
 </div>
 
-
+<div class="container ">
+    {% for item in artiklar %}
+    <div class="row">
+        {% if loop.index0 % 2 == 0 %}
+        <div class="col-8 bg-light">
+        {% else %}
+        <div class="col-8 bg-secondary text-white">
+        {% endif %}
+            <p>Det här är min kommentar, den här produkten kom aldrig fram. Wonder why.</p>
+        </div>
+        {% if loop.index0 % 2 == 0 %}
+        <div class="col-4 bg-secondary text-white">
+        {% else %}
+        <div class="col-4 bg-light">
+        {% endif %}
+            <p>Skrivet av: AmazingReviewer {{ item }}</p>
+            <p> 5 av 5</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}
