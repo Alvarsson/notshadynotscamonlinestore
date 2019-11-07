@@ -5,8 +5,7 @@
 <div class="container">
  <div class="row">
   <div class="col">
-	  <img class="mw-100" src="https://i.kym-cdn.com/photos/images/newsfeed/001/231/093/451">
-   <h2>This is the name of the article</h2>
+   <h2>John Doe</h2>
   </div>
   <div class="col">
       <div class="row">
@@ -27,7 +26,7 @@
                     <label for="number" class="sr-only">Number</label>
                     <input type="number" class="form-control" id="number" placeholder="antal">
                 </div>
-                <button type="submit" class="btn btn-primary mb-2">Buy</button>
+                <button type="submit" class="btn btn-primary mb-2">Change</button>
             </form>
         </div>
   </div>
@@ -35,22 +34,17 @@
 </div>
 
 <div class="container ">
+    <div class="row">
+        <h1>Ordrar</h1>
+    </div>
     {% for item in artiklar %}
     <div class="row">
         {% if loop.index0 % 2 == 0 %}
-        <div class="col-8 bg-light">
+        <div class="col bg-light">
         {% else %}
-        <div class="col-8 bg-secondary text-white">
+        <div class="col bg-secondary text-white">
         {% endif %}
-            <p>Det här är min kommentar, den här produkten kom aldrig fram. Wonder why.</p>
-        </div>
-        {% if loop.index0 % 2 == 0 %}
-        <div class="col-4 bg-secondary text-white">
-        {% else %}
-        <div class="col-4 bg-light">
-        {% endif %}
-            <p>Skrivet av: AmazingReviewer {{ item }}</p>
-            <p> 5 av 5</p>
+            <p>Order {{ loop.index }} {{ item }}</p>
         </div>
     </div>
     {% endfor %}

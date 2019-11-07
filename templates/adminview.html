@@ -14,16 +14,16 @@
 
         <div class="col">
 
-            <input type="Name" class="form-control" id="username" name="username" placeholder="Select a username">
+            <input type="Name" class="form-control" id="article" name="article" placeholder="Product name">
         </div>
 
         <div class="col">
-            <input type="Left in Stock" class="form-control" id="password" name="password"
-                placeholder="Create a password">
+            <input type="number" class="form-control" id="stock" name="stock"
+                placeholder="Left in stock">
         </div>
 
         <div class="col">
-            <input type="Price" class="form-control" id="password" name="password" placeholder="Create a password">
+            <input type="number" class="form-control" id="price" name="price" placeholder="Price">
         </div>
 
         <div class="col">
@@ -54,11 +54,12 @@
             {% for artikel in artiklar %}
             <tr>
                 <div class="row">
-                    <th scope="row">ArtikelNummerHÄR</th>
+                    <th >{{artikel[3]}}</th>
                     <td>{{ artikel[0] }}</td>
                     <td>{{ artikel[1] }}</td>
                     <td>{{ artikel[2] }}</td>
-                    <td><button type="submit" class="btn-primary btn ">Remove</button></td>
+                    <td><button type="submit" class="btn-primary btn" name="remove">Remove</button></td>
+                    <td><button type="submit" class="btn-primary btn" name="edit">Edit</button></td>
                 </div>
             </tr>
             {% endfor %}
