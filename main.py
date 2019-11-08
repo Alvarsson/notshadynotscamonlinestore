@@ -1,9 +1,14 @@
 from flask import Flask, render_template
+import test.py
 
 app = Flask(__name__)
 
 kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
 
+@app.route("/test")
+def testsite():
+    return render_template("index.html", ArrayMedTräd = kategorier)
+    
 @app.route("/")
 def home():
     return render_template("index.html", ArrayMedTräd = kategorier)
