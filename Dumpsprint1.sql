@@ -26,13 +26,14 @@ CREATE TABLE `articles` (
   `article_number` int(11) NOT NULL,
   `stock_quantity` int(11) NOT NULL,
   `picture_url` varchar(150) COLLATE utf8_bin DEFAULT NULL,
-  `category` varchar(30) COLLATE utf8_bin NOT NULL,
+  `category` int(11) NOT NULL,
   `price` int(11) NOT NULL,
   `article_name` varchar(30) COLLATE utf8_bin NOT NULL,
   `article_description` varchar(200) COLLATE utf8_bin DEFAULT NULL,
-  PRIMARY KEY (`article_number`),
   UNIQUE KEY `ArtNamn_UNIQUE` (`article_name`),
-  UNIQUE KEY `ArtNummer_UNIQUE` (`article_number`)
+  UNIQUE KEY `ArtNummer_UNIQUE` (`article_number`),
+  KEY `fk_category_idx` (`category`),
+  CONSTRAINT `fk_category` FOREIGN KEY (`category`) REFERENCES `categories` (`unique_id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -55,7 +56,8 @@ DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `unique_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unikt id',
   `category_name` varchar(30) COLLATE utf8_bin NOT NULL,
-  PRIMARY KEY (`unique_id`)
+  PRIMARY KEY (`unique_id`),
+  UNIQUE KEY `category_name_UNIQUE` (`category_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -65,7 +67,7 @@ CREATE TABLE `categories` (
 
 LOCK TABLES `categories` WRITE;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` VALUES (1,'Barrträd'),(2,'Lövträd'),(3,'Små träd'),(4,'Stora träd'),(5,'Gamer-träd'),(6,'Wannabee-träd'),(7,'Träd från kända serier');
+INSERT INTO `categories` VALUES (1,'Barrträd'),(5,'Gamer-träd'),(2,'Lövträd'),(3,'Små träd'),(4,'Stora träd'),(7,'Träd från kända serier'),(6,'Wannabee-träd');
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -78,4 +80,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-11-11 16:09:30
+-- Dump completed on 2019-11-11 16:33:48
