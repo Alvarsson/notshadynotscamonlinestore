@@ -46,27 +46,27 @@ LOCK TABLES `articles` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `Kategorier`
+-- Table structure for table `categories`
 --
 
-DROP TABLE IF EXISTS `Kategorier`;
+DROP TABLE IF EXISTS `categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Kategorier` (
-  `UID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unikt id',
-  `NAMN` varchar(30) COLLATE utf8_bin NOT NULL,
-  PRIMARY KEY (`UID`)
+CREATE TABLE `categories` (
+  `unique_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unikt id',
+  `category_name` varchar(30) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`unique_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `Kategorier`
+-- Dumping data for table `categories`
 --
 
-LOCK TABLES `Kategorier` WRITE;
-/*!40000 ALTER TABLE `Kategorier` DISABLE KEYS */;
-INSERT INTO `Kategorier` VALUES (1,'Barrträd'),(2,'Lövträd'),(3,'Små träd'),(4,'Stora träd'),(5,'Gamer-träd'),(6,'Wannabee-träd'),(7,'Träd från kända serier');
-/*!40000 ALTER TABLE `Kategorier` ENABLE KEYS */;
+LOCK TABLES `categories` WRITE;
+/*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+INSERT INTO `categories` VALUES (1,'Barrträd'),(2,'Lövträd'),(3,'Små träd'),(4,'Stora träd'),(5,'Gamer-träd'),(6,'Wannabee-träd'),(7,'Träd från kända serier');
+/*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -78,4 +78,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-11-11 16:03:07
+-- Dump completed on 2019-11-11 16:09:30
