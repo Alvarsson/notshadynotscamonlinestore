@@ -9,13 +9,13 @@ artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
 #kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
 
 
-@bp.route("/test", methods=['GET', 'POST'])
+@bp.route("/test")
 def testsite():
+    
+    return render_template("article.html", artiklar = artiklar)
 
-    return render_template("index.html", ArrayMedTräd = treeArray)
 
-
-@bp.route("/", methods=['GET', 'POST'])
+@bp.route("/")
 def home():
     cur = db.connection.cursor()
     cur.execute('''SELECT NAMN FROM Kategorier''')
