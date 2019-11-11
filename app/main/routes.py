@@ -1,20 +1,28 @@
 from flask import render_template
 from app.main import main_bp as bp
+from app import db
+
 
  #Static test input
 artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
 artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
-kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
+#kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
 
 
-@bp.route("/test")
+@bp.route("/test", methods=['GET', 'POST'])
 def testsite():
-    return render_template("index.html", ArrayMedTräd = kategorier)
+
+    return render_template("index.html", ArrayMedTräd = treeArray)
 
 
-@bp.route("/")
+@bp.route("/", methods=['GET', 'POST'])
 def home():
-    return render_template("index.html", ArrayMedTräd = kategorier)
+    cur = db.connection.cursor()
+    cur.execute('''SELECT NAMN FROM Kategorier''')
+    treeArray = []
+    for i in cur.fetchall():
+        treeArray.append(i[0])
+    return render_template("index.html", ArrayMedTräd = treeArray)
 
 
 @bp.route("/login")
