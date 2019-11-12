@@ -40,9 +40,11 @@ def kategori():
     return render_template("kategori.html", artiklar = artiklar)
 
 
-@bp.route("/article")
-def article():
-    return render_template("article.html", artiklar = artiklar)
+@bp.route("/article/<int:article_number>")
+def article(article_number):
+    cur = db.connection.cursor()
+    cur.execute("SELECT * FROM articles WHERE article_number = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
+    return render_template("article.html", artiklar = [i[5] for i in cur.fetchall()])
 
 
 @bp.route("/user")
