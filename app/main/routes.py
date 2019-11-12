@@ -11,14 +11,14 @@ artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
 
 @bp.route("/test")
 def testsite():
-    
+
     return render_template("article.html", artiklar = artiklar)
 
 
 @bp.route("/")
 def home():
     cur = db.connection.cursor()
-    cur.execute('''SELECT NAMN FROM Kategorier''')
+    cur.execute('''SELECT category_name FROM categories''')
     treeArray = []
     for i in cur.fetchall():
         treeArray.append(i[0])
