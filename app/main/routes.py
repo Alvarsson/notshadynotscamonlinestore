@@ -35,15 +35,24 @@ def admin():
     return render_template("adminview.html", artiklar = artiklar)
 
 
-@bp.route("/kategori")
-def kategori():
-    return render_template("kategori.html", artiklar = artiklar)
+@bp.route("/category/<int:category_id>")
+def category(category_id):
+    cur = db.connection.cursor()
+    cur.execute("SELECT * FROM articles WHERE category = " + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
+    result = list()
+    for i in cur.fetchall():
+        result.append(i)
 
+    
+   
+    return render_template("kategori.html", artiklar = result)
+    
 
 @bp.route("/article/<int:article_number>")
 def article(article_number):
     cur = db.connection.cursor()
     cur.execute("SELECT * FROM articles WHERE article_number = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
+    
     return render_template("article.html", artiklar = [i[5] for i in cur.fetchall()])
 
 
