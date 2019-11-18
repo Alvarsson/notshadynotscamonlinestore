@@ -38,14 +38,15 @@ def admin():
 @bp.route("/category/<int:category_id>")
 def category(category_id):
     cur = db.connection.cursor()
-    cur.execute("SELECT * FROM articles WHERE category = " + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
+    #cur.execute("SELECT * FROM articles WHERE category = " + str(category_id))
+    cur.execute("SELECT * FROM articles INNER JOIN categories ON articles.category=categories.category_id WHERE categories.category_id=" + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
     result = list()
     for i in cur.fetchall():
         result.append(i)
 
+    print(result)
     
-   
-    return render_template("kategori.html", artiklar = result)
+    return render_template("kategori.html", artiklar = result,title=result[0][-1])
     
 
 @bp.route("/article/<int:article_number>")

@@ -4,28 +4,30 @@
 
 
 <div class="container">
- <h2>Kategori {{ artiklar[0] }}</h2>
- <table class="table table-striped">
-   <thead> 
-     <tr>
-       <th scope="col">id</th>
-       <th scope="col">Name</th>
-       <th scope="col">Left in Stock</th>
-       <th scope="col">Price</th>
-     </tr>
-   </thead>
- 
-   <tbody>
-   {% for item in artiklar %}
-     <tr>
-       <td>{{ item[0] }}</td>
-       <td>{{ item[5] }}</td>
-       <td>{{ item[1] }}</td>
-       <td>{{ item[4] }}</td>
-     </tr>
-   {% endfor %}
-   </tbody>
- </table>
+    <h2>Kategori - {{ title }}</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Left in Stock</th>
+                <th scope="col">Price</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in artiklar %}
+            <a >
+                <tr>
+                    <td>{{ item[0] }}</td>
+                    <td>{{ item[5] }}</td>
+                    <td>{{ item[1] }}</td>
+                    <td>{{ item[4] }}</td>
+                </tr>
+            </a>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 {% endblock %}
