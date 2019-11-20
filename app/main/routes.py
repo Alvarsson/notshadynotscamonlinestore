@@ -25,16 +25,6 @@ def home():
     return render_template("index.html", ArrayMedTräd = treeArray)
 
 
-@bp.route("/login")
-def login():
-    return render_template("login.html")
-
-
-@bp.route("/admin")
-def admin():
-    return render_template("adminview.html", artiklar = artiklar)
-
-
 @bp.route("/category/<int:category_id>")
 def category(category_id):
     cur = db.connection.cursor()

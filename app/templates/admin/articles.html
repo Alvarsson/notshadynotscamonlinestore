@@ -7,14 +7,21 @@
 
 <div class="container-fluid">
 
-    <h1>Admin view</h1>
+    <h1>Edit Categories</h1>
     <hr>
     <form action="/admin" class="form-row">
         <!--</form>method="POST"> ACTION ÄR VILKEN fil SOM KOMMER HANTERA DATAN-->
 
         <div class="col">
+            <select class="form-control" id="category" placeholder="Choose category">
+                {% for item in categories %}
+                <option>{{item[0]}}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-            <input type="Name" class="form-control" id="article" name="article" placeholder="Product name">
+        <div class="col">
+            <input type="Name" class="form-control" id="article" name="article" placeholder="Article name">
         </div>
 
         <div class="col">
@@ -24,11 +31,6 @@
 
         <div class="col">
             <input type="number" class="form-control" id="price" name="price" placeholder="Price">
-        </div>
-
-        <div class="col">
-            <button type="submit" class="btn-primary btn ">Choose file</button>
-            <label>{{filename}}</label>
         </div>
 
         <div class="col">
