@@ -20,12 +20,14 @@
         <div class="col">
             <button type="submit" name="submit" value="addCategory" class="btn-primary btn ">Add</button>
         </div>
-    </form>
+    </form> 
 
 
 </div>
 
-<form action="/admin/categories">
+<form action="/admin/categories" method="POST">
+<div class="row">
+    <div class="col">
     <table class="table">
         <thead>
             <tr>
@@ -38,15 +40,47 @@
             {% for item in categories %}
             <tr>
                 <div class="row">
-                    <th >{{ item[1] }}</th>
+                    <th>{{ item[1] }}</th>
                     <td>{{ item[0] }}</td>
-                    <td><button type="submit" class="btn-primary btn" name="remove">Remove</button></td>
+                    <!-- Fan för det här albin. Släng dig i väggen alla älskar min nya lösning ändå.
+                    <td><button type="submit" class="btn-primary btn" name="submit" value="remove">Remove</button></td>
                     <td><button type="submit" class="btn-primary btn" name="edit">Edit</button></td>
+                    -->
                 </div>
             </tr>
             {% endfor %}
         </tbody>
+        
     </table>
+    </div>
+    
+    <div class="col">
+        <br>
+        <br>
+        <div class="row">
+            <div class="col">
+                <input type="text" class="form-control" id="removeid" name="removefield" placeholder="Choose id of category to remove">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn-primary btn" name="submit" value="remove">Remove</button>
+            </div>
+        </div>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col">
+                <input type="text" class="form-control" id="editid" name="editfield" placeholder="Edit category id">
+            </div>
+            <div class="col">
+                    <input type="text" class="form-control" id="nameid" name="newname" placeholder="New category name">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn-primary btn" name="submit" value="edit">Edit</button>
+            </div>
+        </div>
+    </div>
+</div>
+    
 </form>
 
 </div>

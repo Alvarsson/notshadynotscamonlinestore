@@ -1,7 +1,6 @@
 from flask import render_template, redirect, url_for, request
 from app.admin import admin_bp as bp
 from app import db
-#categoryArray = [("edward",'1'),("albin",'2')]
 
 artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
 
@@ -16,22 +15,35 @@ def adminArticles():
 @bp.route("/admin/categories", methods=['POST', 'GET'])
 def adminCategories():
     
+    #Fetchar data från nuvarande kategoritabell och skriver ut på sidan
     cur = db.connection.cursor()
     cur.execute('''SELECT category_name, unique_id FROM categories''')
     categoryArray = []
     for i in cur.fetchall():
         categoryArray.append(i)
     
+    #Skickar data mot tabell kategorier beroende på vilken submitknapp
     if request.method == 'POST':
-        print("hejhå")
+        #Submit för att lägga till kategori
         if request.form['submit'] == 'addCategory':
-
-            #cur = db.connection.cursor()
             newCategory = request.form['categoryfield']
             newCategory = "('" + str(newCategory) + "')"
-            print(newCategory)
-            #addCatCur = db.connection.cursor()
             cur.execute('''INSERT INTO categories (category_name) VALUES'''+ newCategory + ";")
+            db.connection.commit()
+            cur.close()
+            return redirect(url_for('admin.adminCategories'))
+        #Submit för att ta bort kategori
+        elif request.form['submit'] == 'remove':
+            deleteCat = request.form['removefield']
+            cur.execute('''DELETE FROM categories WHERE unique_id=''' + deleteCat)
+            db.connection.commit()
+            cur.close()
+            return redirect(url_for('admin.adminCategories'))
+        #Submit för att ändra namn på kategori
+        elif request.form['submit'] == 'edit':
+            catID = request.form['editfield']
+            newName = "('" + request.form['newname'] + "')"
+            cur.execute("UPDATE categories SET category_name =" + newName + " WHERE unique_id = " + str(catID))
             db.connection.commit()
             cur.close()
             return redirect(url_for('admin.adminCategories'))
