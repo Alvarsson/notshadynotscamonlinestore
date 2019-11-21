@@ -11,7 +11,7 @@ def admin():
 @bp.route("/admin/articles", methods=['POST', 'GET'])
 def adminArticles():
     cur = db.connection.cursor()
-    cur.execute('''SELECT category_name, unique_id FROM categories''')
+    cur.execute('''SELECT category_name, category_id FROM categories''')
     categoryArray = []
     for i in cur.fetchall():
         categoryArray.append(i)
@@ -26,7 +26,7 @@ def adminArticles():
             url = "('" + request.form['url'] + "')"
             desc = "('" + request.form['description'] + "')"
 
-            cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url, article_description) VALUES ("+ articleName +",(SELECT unique_id FROM categories WHERE category_name="+ chooseCat +"),"+ price + ","+ stockAmount +","+ url +","+ desc +");" )
+            cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url, article_description) VALUES ("+ articleName +",(SELECT category_id FROM categories WHERE category_name="+ chooseCat +"),"+ price + ","+ stockAmount +","+ url +","+ desc +");" )
             db.connection.commit()
             cur.close()
             return redirect(url_for('admin.adminArticles'))
@@ -38,7 +38,7 @@ def adminCategories():
     
     #Fetchar data från nuvarande kategoritabell och skriver ut på sidan
     cur = db.connection.cursor()
-    cur.execute('''SELECT category_name, unique_id FROM categories ORDER BY unique_id ASC;''')
+    cur.execute('''SELECT category_name, category_id FROM categories ORDER BY category_id ASC;''')
     categoryArray = []
     for i in cur.fetchall():
         categoryArray.append(i)
@@ -56,7 +56,7 @@ def adminCategories():
         #Submit för att ta bort kategori
         elif request.form['submit'] == 'remove':
             deleteCat = request.form['removefield']
-            cur.execute('''DELETE FROM categories WHERE unique_id=''' + deleteCat)
+            cur.execute('''DELETE FROM categories WHERE category_id=''' + deleteCat)
             db.connection.commit()
             cur.close()
             return redirect(url_for('admin.adminCategories'))
@@ -64,7 +64,7 @@ def adminCategories():
         elif request.form['submit'] == 'edit':
             catID = request.form['editfield']
             newName = "('" + request.form['newname'] + "')"
-            cur.execute("UPDATE categories SET category_name =" + newName + " WHERE unique_id = " + str(catID))
+            cur.execute("UPDATE categories SET category_name =" + newName + " WHERE category_id = " + str(catID))
             db.connection.commit()
             cur.close()
             return redirect(url_for('admin.adminCategories'))
