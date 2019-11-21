@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template,url_for
 from app.main import main_bp as bp
 from app import db
 
@@ -7,7 +7,6 @@ from app import db
 artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
 artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
 #kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
-
 
 @bp.route("/test")
 def testsite():
@@ -18,11 +17,14 @@ def testsite():
 @bp.route("/")
 def home():
     cur = db.connection.cursor()
-    cur.execute('''SELECT category_name FROM categories''')
-    treeArray = []
+    cur.execute('''SELECT * FROM categories ORDER BY category_name''')
+
+    categories = []
     for i in cur.fetchall():
-        treeArray.append(i[0])
-    return render_template("index.html", ArrayMedTräd = treeArray)
+        category = (int(i[0]),i[1])
+        
+        categories.append(category)
+    return render_template("index.html", ArrayMedTräd = categories)
 
 
 @bp.route("/category/<int:category_id>")
@@ -34,9 +36,9 @@ def category(category_id):
     for i in cur.fetchall():
         result.append(i)
 
-    print(result)
+    #print(result)
     
-    return render_template("kategori.html", artiklar = result,title=result[0][-1])
+    return render_template("kategori.html", artiklar = result,title=result[0][7])
     
 
 @bp.route("/article/<int:article_number>")
