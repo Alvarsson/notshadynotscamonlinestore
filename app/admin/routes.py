@@ -48,10 +48,14 @@ def adminArticles():
         #Ändra artikelinformation
         elif request.form['submit'] == 'edit':
             editID = request.form['editfield']
-            newName = request.form['newname']
+            newName = "('" + request.form['newname'] + "')"
             newStock = request.form['newstock']
             newPrice = request.form['newprice']
-            cur.execute("UPDATE articles SET article_name="+ newName +", stock_quantity="+ newStock +", price="+ newPrice + "WHERE article_number="+ editID +";")
+            newDescription = request.form['newdescription']
+            cur.execute("UPDATE articles SET article_name="+ newName +", stock_quantity="+ newStock +", price="+ newPrice +" WHERE article_number= "+ editID +";")
+            if newDescription != "":
+                newDescription = "('" + request.form['newdescription'] + "')"
+                cur.execute("UPDATE article_description SET description="+ newDescription +" WHERE description_number= "+ editID +";")
             db.connection.commit()
             cur.close()
             return redirect(url_for('admin.adminArticles'))
