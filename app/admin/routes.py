@@ -21,9 +21,6 @@ def adminArticles():
     for art in cur.fetchall():
         articlesArray.append(art)
     
-    #print(cur.fetchall())
-    
-    
     if request.method == 'POST':
         #Submit för att lägga till artiklar
         if request.form['submit'] == 'addarticle':
@@ -38,6 +35,23 @@ def adminArticles():
             if desc != "":
                 desc = "('" + request.form['description'] + "')"
                 cur.execute("INSERT INTO article_description (description, description_number ) VALUES ("+ desc +", (SELECT article_number FROM articles WHERE article_name="+ articleName +"));")
+            db.connection.commit()
+            cur.close()
+            return redirect(url_for('admin.adminArticles'))
+        #Ta bort artikel
+        elif request.form['submit'] == 'remove':
+            removeArticle = request.form['removefield']
+            cur.execute("DELETE FROM articles WHERE article_number="+ removeArticle +";")
+            db.connection.commit()
+            cur.close()
+            return redirect(url_for('admin.adminArticles'))
+        #Ändra artikelinformation
+        elif request.form['submit'] == 'edit':
+            editID = request.form['editfield']
+            newName = request.form['newname']
+            newStock = request.form['newstock']
+            newPrice = request.form['newprice']
+            cur.execute("UPDATE articles SET article_name="+ newName +", stock_quantity="+ newStock +", price="+ newPrice + "WHERE article_number="+ editID +";")
             db.connection.commit()
             cur.close()
             return redirect(url_for('admin.adminArticles'))

@@ -13,7 +13,7 @@
         <!--</form>method="POST"> ACTION ÄR VILKEN fil SOM KOMMER HANTERA DATAN-->
 
         <div class="col">
-            <input type="text" class="form-control" id="categoryid" name="categoryfield" placeholder="Category name">
+            <input type="text" class="form-control" id="categoryid" name="categoryfield" placeholder="Category name" required>
             
         </div>
 
@@ -59,7 +59,7 @@
         <br>
         <div class="row">
             <div class="col">
-                <input type="text" class="form-control" id="removeid" name="removefield" placeholder="Choose id of category to remove">
+                <input type="text" class="form-control" id="removeid" name="removefield" placeholder="Choose id of category to remove" required>
             </div>
             <div class="col">
                 <button type="submit" class="btn-primary btn" name="submit" value="remove">Remove</button>
@@ -69,10 +69,10 @@
         <br>
         <div class="row">
             <div class="col">
-                <input type="text" class="form-control" id="editid" name="editfield" placeholder="Edit category id">
+                <input type="text" class="form-control" id="editid" name="editfield" placeholder="Edit category id" required>
             </div>
             <div class="col">
-                    <input type="text" class="form-control" id="nameid" name="newname" placeholder="New category name">
+                    <input type="text" class="form-control" id="nameid" name="newname" placeholder="New category name" required>
             </div>
             <div class="col">
                 <button type="submit" class="btn-primary btn" name="submit" value="edit">Edit</button>

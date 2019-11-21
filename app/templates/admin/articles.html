@@ -22,15 +22,15 @@
         </div>
 
         <div class="col">
-            <input type="Name" class="form-control" id="article" name="article" placeholder="Article name">
+            <input type="Name" class="form-control" id="article" name="article" placeholder="Article name" required>
         </div>
 
         <div class="col">
-            <input type="number" class="form-control" id="stock" name="stock" placeholder="Amount in stock">
+            <input type="number" class="form-control" id="stock" name="stock" placeholder="Amount in stock" required>
         </div>
 
         <div class="col">
-            <input type="number" class="form-control" id="price" name="price" placeholder="Price">
+            <input type="number" class="form-control" id="price" name="price" placeholder="Price" required>
         </div>
 
         
@@ -53,6 +53,8 @@
 </div>
 
 <form action="/admin/articles" method="POST">
+    <div class="row">
+    <div class="col">
     <table class="table">
         <thead>
             <tr>
@@ -71,13 +73,59 @@
                     <td>{{ artikel[1] }}</td>
                     <td>{{ artikel[2] }}</td>
                     <td>{{ artikel[3] }}</td>
+                    <!--
                     <td><button type="submit" class="btn-primary btn" name="remove">Remove</button></td>
                     <td><button type="submit" class="btn-primary btn" name="edit">Edit</button></td>
+                    -->
                 </div>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    </div>
+    <div class="col">
+            <br>
+            <br>
+            <div class="row">
+                <div class="col">
+                    <input type="text" class="form-control" id="removeid" name="removefield" placeholder="Choose id of article to remove" required>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn-primary btn" name="submit" value="remove">Remove</button>
+                </div>
+            </div>
+        </form>
+        <form action="/admin/articles" method="POST">
+            <br>
+            <br>
+            <div class="row">
+                <div class="row p-2">
+                    <div class="col">
+                        <input type="text" class="form-control" id="editid" name="editfield" placeholder="Edit article id" required>
+                    </div>
+                    <div class="col">
+                            <input type="text" class="form-control" id="nameid" name="newname" placeholder="New article name" required>
+                    </div>
+                </div>
+                <div class="row p-2">
+                    <div class="col">
+                            <input type="text" class="form-control" id="stockid" name="newstock" placeholder="New stock amount" required>
+                    </div>
+                    
+                    <div class="col">
+                            <input type="text" class="form-control" id="priceid" name="newprice" placeholder="New article price" required>
+                    </div>
+                </div>
+                
+                <div class="col p-2">
+                    <button type="submit" class="btn-primary btn" name="submit" value="edit">Edit</button>
+                </div>
+            
+            </div>
+        </div>
+
+
+</div>
 </form>
 
 </div>
