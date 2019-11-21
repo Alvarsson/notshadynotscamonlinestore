@@ -7,15 +7,16 @@
 
 <div class="container-fluid">
 
-    <h1>Edit Categories</h1>
+    <h1>Edit Articles</h1>
     <hr>
-    <form action="/admin" class="form-row">
+    <form action="/admin/articles" class="form-row" method="POST">
         <!--</form>method="POST"> ACTION ÄR VILKEN fil SOM KOMMER HANTERA DATAN-->
-
+    <div class="row">
         <div class="col">
-            <select class="form-control" id="category" placeholder="Choose category">
+            <select class="form-control" id="category" placeholder="Choose category" name="chooseCategory" required>
                 {% for item in categories %}
-                <option>{{item[0]}}</option>
+                tempval = {{ item[1] }}
+                <option>{{ item[0] }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -25,23 +26,33 @@
         </div>
 
         <div class="col">
-            <input type="number" class="form-control" id="stock" name="stock"
-                placeholder="Left in stock">
+            <input type="number" class="form-control" id="stock" name="stock" placeholder="Amount in stock">
         </div>
 
         <div class="col">
             <input type="number" class="form-control" id="price" name="price" placeholder="Price">
         </div>
 
+        
+    </div>
+    
+    <div class="row p-2">
         <div class="col">
-            <button type="submit" class="btn-primary btn ">Add</button>
+            <input type="text" class="form-control" id="url" name="url" placeholder="URL to picture">
         </div>
+        <div class="col">
+            <input type="text" class="form-control" id="description" name="description" placeholder="Describe the article">
+        </div>
+        <div class="col">
+            <button type="submit" class="btn-primary btn " name="submit" value="addarticle">Add</button>
+        </div>
+    </div>
 
-
+    </form>
 
 </div>
 
-<form action="/admin">
+<form action="/admin/articles" method="POST">
     <table class="table">
         <thead>
             <tr>

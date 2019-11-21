@@ -8,9 +8,30 @@ artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
 def admin():
     return render_template("admin/overview.html", artiklar = artiklar)
 
-@bp.route("/admin/articles")
+@bp.route("/admin/articles", methods=['POST', 'GET'])
 def adminArticles():
-    return render_template("admin/articles.html", artiklar = artiklar)
+    cur = db.connection.cursor()
+    cur.execute('''SELECT category_name, unique_id FROM categories''')
+    categoryArray = []
+    for i in cur.fetchall():
+        categoryArray.append(i)
+    
+    if request.method == 'POST':
+        #Submit för att lägga till artiklar
+        if request.form['submit'] == 'addarticle':
+            chooseCat = "('" + request.form['chooseCategory'] + "')"
+            articleName = "('" + request.form['article'] + "')"
+            stockAmount = request.form['stock']
+            price = request.form['price']
+            url = "('" + request.form['url'] + "')"
+            desc = "('" + request.form['description'] + "')"
+
+            cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url, article_description) VALUES ("+ articleName +",(SELECT unique_id FROM categories WHERE category_name="+ chooseCat +"),"+ price + ","+ stockAmount +","+ url +","+ desc +");" )
+            db.connection.commit()
+            cur.close()
+            return redirect(url_for('admin.adminArticles'))
+
+    return render_template("admin/articles.html", categories = categoryArray)
 
 @bp.route("/admin/categories", methods=['POST', 'GET'])
 def adminCategories():
