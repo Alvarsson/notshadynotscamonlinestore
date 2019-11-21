@@ -17,7 +17,7 @@ def adminCategories():
     
     #Fetchar data från nuvarande kategoritabell och skriver ut på sidan
     cur = db.connection.cursor()
-    cur.execute('''SELECT category_name, unique_id FROM categories''')
+    cur.execute('''SELECT category_name, unique_id FROM categories ORDER BY unique_id ASC;''')
     categoryArray = []
     for i in cur.fetchall():
         categoryArray.append(i)
