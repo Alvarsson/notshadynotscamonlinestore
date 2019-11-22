@@ -4,40 +4,42 @@
 {%block main %}
 
 <style>
-        td, th {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-            text-align: center;
-        }
-        </style>
-<div class="container"> 
-    
+    td,
+    th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        text-align: center;
+    }
+</style>
+<div class="container">
+
     <div class="row">
         <header class="mx-auto"><b>Dagens träd</b></header>
     </div>
     <div class="row">
-        <img src="https://arbordayblog.org/wp-content/uploads/2018/06/oak-tree-sunset-iStock-477164218-1080x608.jpg" alt="tree" class="mx-auto" class="img-responsive" width="800" height="300">
+        <img src="https://arbordayblog.org/wp-content/uploads/2018/06/oak-tree-sunset-iStock-477164218-1080x608.jpg"
+            alt="tree" class="mx-auto" class="img-responsive" width="800" height="300">
     </div>
-<br>
+    <br>
     <div class="row">
         <header class="mx-auto">Kategorier:</header>
     </div>
-    
+
     <div class="row">
         <div class="col-md-auto">
         </div>
     </div>
 </div>
 <form method="GET" action="">
-<div class="container">
+    <div class="container">
         <table class="table">
-                {% for i in ArrayMedTräd %}
-                <tr>
-                    <th>{{i}}</th>
-                </tr>
-                {% endfor %} 
-            </table>
-</div>
+            {% for i in ArrayMedTräd %}
+            <tr>
+                <th><a href="{{ url_for('main.category',category_id=i[0] ) }}">{{i[1]}}</a></th>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 </form>
 {% endblock %}

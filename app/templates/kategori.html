@@ -5,29 +5,26 @@
 
 <div class="container">
     <h2>Kategori - {{ title }}</h2>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">id</th>
-                <th scope="col">Name</th>
-                <th scope="col">Left in Stock</th>
-                <th scope="col">Price</th>
-            </tr>
-        </thead>
 
-        <tbody>
-            {% for item in artiklar %}
-            <a >
-                <tr>
-                    <td>{{ item[0] }}</td>
-                    <td>{{ item[5] }}</td>
-                    <td>{{ item[1] }}</td>
-                    <td>{{ item[4] }}</td>
-                </tr>
+    <ul>
+        {% for item in artiklar %}
+        <li class="list-group-item list-group-item list-group-item-action flex-column align-items-start">
+            <a href="{{ url_for('main.article',article_number=item[0] ) }}">
+                <div class="d-flex w-100 justify-content-between">
+                    <img src="https://www.mcdonalds.com/etc/designs/mcdonalds/en/_jcr_content/genericpage/genericpagecontent/sitelevelconfiguration/logoimage.img.png"
+                        }>
+
+                    <h5 class="mb-1">{{item[5]}}</h5>
+                    <medium>{{item[4]}} kr</medium>
+                </div>
+                <!-- <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus
+                            varius blandit.</p>
+                        <small>Donec id elit non mi porta.</small> -->
             </a>
-            {% endfor %}
-        </tbody>
-    </table>
+        </li>
+        {% endfor %}
+    </ul>
+
 </div>
 
 {% endblock %}
