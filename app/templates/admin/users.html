@@ -1,0 +1,63 @@
+{% extends "public_template.html" %}
+
+{% block main %}
+
+
+
+
+<div class="container-fluid">
+
+    <h1>Edit Users</h1>
+    <hr>
+    <form action="/admin/users" class="form-row" method="POST">
+        <!--</form>method="POST"> ACTION ÄR VILKEN fil SOM KOMMER HANTERA DATAN-->
+
+        <div class="col">
+            <input type="number" class="form-control" id="userid" name="userfield" placeholder="User id to remove" required>
+            
+        </div>
+
+        <div class="col">
+            <button type="submit" name="submit" value="removeuser" class="btn-primary btn ">Remove</button>
+        </div>
+    </form> 
+
+
+</div>
+
+<form action="/admin/categories">
+<div class="row">
+    <div class="col">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">First name</th>
+                <th scope="col">Last name</th>
+                <th scope="col">Username</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <div class="row">
+                    <th>{{ user[0] }}</th>
+                    <td>{{ user[1] }}</td>
+                    <td>{{ user[2] }}</td>
+                    <td>{{ user[3] }}</td>
+                </div>
+            </tr>
+            {% endfor %}
+        </tbody>
+        
+    </table>
+    </div>
+    
+</div>
+    
+</form>
+
+</div>
+
+{% endblock %}

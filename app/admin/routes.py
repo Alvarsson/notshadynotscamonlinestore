@@ -99,7 +99,20 @@ def adminCategories():
             return redirect(url_for('admin.adminCategories'))
     return render_template("admin/categories.html", categories = categoryArray)
 
-@bp.route("/admin/users")
+@bp.route("/admin/users", methods=['POST', 'GET'])
 def adminUsers():
-    return render_template("admin/articles.html", artiklar = artiklar)
+    cur = db.connection.cursor()
+    cur.execute("SELECT customer_id, first_name, last_name, user_name FROM users ORDER BY customer_id ASC;")
+    userArray = []
+    for user in cur.fetchall():
+        userArray.append(user)
+
+    if request.method == 'POST':
+        if request.form['submit'] == 'removeuser':
+            userID = request.form['userfield']
+            cur.execute("DELETE FROM users WHERE customer_id="+ userID + ";")
+            db.connection.commit()
+            cur.close()
+            return redirect(url_for('admin.adminUsers'))
+    return render_template("admin/users.html", users = userArray)
 
