@@ -22,7 +22,7 @@ def home():
     categories = []
     for i in cur.fetchall():
         category = (int(i[0]),i[1])
-        
+
         categories.append(category)
     return render_template("index.html", ArrayMedTräd = categories)
 
@@ -37,15 +37,15 @@ def category(category_id):
         result.append(i)
 
     #print(result)
-    
+
     return render_template("kategori.html", artiklar = result,title=result[0][7])
-    
+
 
 @bp.route("/article/<int:article_number>")
 def article(article_number):
     cur = db.connection.cursor()
     cur.execute("SELECT * FROM articles WHERE article_number = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
-    
+
     return render_template("article.html", artiklar = [i[5] for i in cur.fetchall()])
 
 
