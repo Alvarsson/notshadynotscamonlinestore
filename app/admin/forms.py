@@ -5,13 +5,14 @@ from wtforms.validators import DataRequired
 
 class AddCategoryForm(FlaskForm):
     name = StringField('Category name', validators=[DataRequired()])
-    submit = SubmitField("Add")
+    submitAdd = SubmitField("Add")
 
 class RemoveCategoryForm(FlaskForm):
     category_id = IntegerField('Category ID', validators=[DataRequired()])
-    submit = SubmitField("Remove")
+    submitRemove = SubmitField("Remove")
 
 class EditCategoryForm(FlaskForm):
-    name = StringField('Email', validators=[DataRequired()])
+    new_name = StringField('Category name', validators=[DataRequired()])
     category_id = IntegerField('Category ID', validators=[DataRequired()])
-    submit = SubmitField("Edit")
+    submitEdit = SubmitField("Edit")
+

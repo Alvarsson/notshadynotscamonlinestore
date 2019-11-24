@@ -84,21 +84,13 @@ def adminCategories():
     for i in cur.fetchall():
         categoryArray.append(i)
         
-    editCategory = EditCategoryForm()
-    if editCategory.validate_on_submit():
-        catID = str(editCategory.category_id.data)
-        newName = str(editCategory.name.data)
-        
-        cur.execute("UPDATE categories SET category_name ='" + newName + "' WHERE category_id = " + catID +";")
-        #UPDATE categories SET category_name ='Abbe' WHERE category_id = 16;
-        
-        db.connection.commit()
-        cur.close()
-        return redirect(url_for('admin.adminCategories'))
-        
-
     addCategory = AddCategoryForm()
-    if addCategory.validate_on_submit():
+    removeCategory = RemoveCategoryForm()
+    editCategory = EditCategoryForm()
+
+    
+    if addCategory.validate_on_submit() and addCategory.submitAdd.data:
+        print("adding a new category")
         newCategory = addCategory.name.data
         newCategory = "('" + str(newCategory) + "')"
         cur.execute(
@@ -107,17 +99,32 @@ def adminCategories():
         cur.close()
         return redirect(url_for('admin.adminCategories'))
 
-    removeCategory = RemoveCategoryForm()
-    if removeCategory.validate_on_submit():
+    
+    elif removeCategory.validate_on_submit() and removeCategory.submitRemove.data:
+        print("removing")
+        
         deleteCat = removeCategory.category_id.data
         cur.execute(
             '''DELETE FROM categories WHERE category_id=''' + str(deleteCat))
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminCategories'))
+    
+    elif editCategory.validate_on_submit() and editCategory.submitEdit.data:
+        print("editing")
+
+        catID = str(editCategory.category_id.data)
+        newName = str(editCategory.new_name.data)
+        
+        cur.execute("UPDATE categories SET category_name ='" + newName + "' WHERE category_id = " + catID +";")
+        #UPDATE categories SET category_name ='Abbe' WHERE category_id = 16;
+        
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for('admin.adminCategories'))
 
 
-    return render_template("admin/categoriesv2.html", removeCategoryForm=removeCategory,categories=categoryArray, addCategoryForm=addCategory,editCategoryForm=editCategory)
+    return render_template("admin/categoriesv2.html", categories=categoryArray, addCategoryForm=addCategory, removeCategoryForm=removeCategory, editCategoryForm=editCategory)
 
 
 @bp.route("/admin/users", methods=['POST', 'GET'])

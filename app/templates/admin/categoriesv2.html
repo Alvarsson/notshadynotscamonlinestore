@@ -19,7 +19,7 @@
 
                 </div>
                 <div class="form-group">
-                    {{ addCategoryForm.submit(class="btn-primary btn") }}
+                    {{ addCategoryForm.submitAdd(class="btn-primary btn") }}
                 </div>
             </form>
         </div>
@@ -28,11 +28,11 @@
                 {{ removeCategoryForm.csrf_token }}
 
                 <div class="form-group">
-                    {{ removeCategoryForm.category_id(class="form-control",placeholder="Category Name") }}
+                    {{ removeCategoryForm.category_id(class="form-control",placeholder="Category ID") }}
 
                 </div>
                 <div class="form-group">
-                    {{ removeCategoryForm.submit(class="btn-primary btn") }}
+                    {{ removeCategoryForm.submitRemove(class="btn-primary btn") }}
                 </div>
             </form>
         </div>
@@ -41,7 +41,7 @@
                 {{ editCategoryForm.csrf_token }}
 
                 <div class="form-group">
-                    {{ editCategoryForm.name(class="form-control",placeholder="Category Name")  }}
+                    {{ editCategoryForm.new_name(class="form-control",placeholder="Category Name")  }}
                 </div>
 
                 <div class="form-group">
@@ -49,7 +49,7 @@
 
                 </div>
                 <div class="form-group">
-                    {{ editCategoryForm.submit(class="btn-primary btn")}}
+                    {{ editCategoryForm.submitEdit(class="btn-primary btn")}}
                 </div>
             </form>
 
