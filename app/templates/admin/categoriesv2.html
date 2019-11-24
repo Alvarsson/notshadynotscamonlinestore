@@ -24,21 +24,17 @@
 
 
     <form method="POST" action="/admin/categories" class="form-row">
-        {{ form.csrf_token }}
+        {{ addCategoryForm.csrf_token }}
 
         <div class="col">
-            {{ form.name(class="form-control") }}
+            {{ addCategoryForm.name(class="form-control") }}
 
         </div>
         <div class="col">
-            {{ form.submit }}
+            {{ addCategoryForm.submit }}
         </div>
     </form>
 
-
-</div>
-
-<form action="/admin/categories" method="POST">
     <div class="row">
         <div class="col">
             <table class="table">
@@ -67,37 +63,36 @@
             </table>
         </div>
 
-        <div class="col">
-            <br>
-            <br>
-            <div class="row">
-                <div class="col">
-                    <input type="text" class="form-control" id="removeid" name="removefield"
-                        placeholder="Choose id of category to remove" required>
-                </div>
-                <div class="col">
-                    <button type="submit" class="btn-primary btn" name="submit" value="remove">Remove</button>
-                </div>
-            </div>
-            <br>
-            <br>
-            <div class="row">
-                <div class="col">
-                    <input type="text" class="form-control" id="editid" name="editfield" placeholder="Edit category id"
-                        required>
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control" id="nameid" name="newname" placeholder="New category name"
-                        required>
-                </div>
-                <div class="col">
-                    <button type="submit" class="btn-primary btn" name="submit" value="edit">Edit</button>
-                </div>
-            </div>
-        </div>
+
     </div>
 
-</form>
+    <form method="POST" action="/admin/categories" class="form-row">
+        {{ removeCategoryForm.csrf_token }}
+
+        <div class="col">
+            {{ removeCategoryForm.category_id(class="form-control") }}
+
+        </div>
+        <div class="col">
+            {{ removeCategoryForm.submit }}
+        </div>
+    </form>
+
+    <form method="POST" action="/admin/categories" class="form-row">
+        {{ editCategoryForm.csrf_token }}
+        
+        <div class="col">
+            {{ editCategoryForm.name(class="form-control",placeholder="Category Name")  }}
+        </div>
+
+        <div class="col">
+            {{ editCategoryForm.category_id(class="form-control",placeholder="Category ID") }}
+
+        </div>
+        <div class="col">
+            {{ editCategoryForm.submit }}
+        </div>
+    </form>
 
 </div>
 
