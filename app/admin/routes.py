@@ -31,25 +31,29 @@ def adminArticles():
     
     
     addArticle = AddArticleForm()
-    addArticle.category.choices = categoryArray #fill dropdown with categories
+    #addArticle.category.choices = categoryArray #fill dropdown with categories
+    #print(addArticle.category.data)
+    #print(addArticle.category.choices)
+    
     
     
     if addArticle.validate_on_submit() and addArticle.submitAddArticle.data:
         
         print("adding a new article")
-        chooseCat = "('" + addArticle.category.data + "')"
-        articleName = "('" + addArticle.name.data + "')"
-        stockAmount = addArticle.stock.data
-        price = addArticle.price.data
-        url = "('" + addArticle.url.data + "')"
-        desc = addArticle.description.data
+        print(str(addArticle.category.data))
+        chooseCat = str(addArticle.category.data) # "Barrträd"#
+        articleName = str(addArticle.name.data) 
+        stockAmount = str(addArticle.stock.data)
+        price = str(addArticle.price.data)
+        url = "('" + str(addArticle.url.data) + "')"
+        # desc = str(addArticle.description.data)
 
-        cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url) VALUES (" + articleName +
-                    ",(SELECT category_id FROM categories WHERE category_name=" + chooseCat + ")," + price + "," + stockAmount + "," + url + ");")
-        if desc != "":
-            desc = "('" + request.form['description'] + "')"
-            cur.execute("INSERT INTO article_description (description, description_number ) VALUES (" +
-                        desc + ", (SELECT article_number FROM articles WHERE article_name=" + articleName + "));")
+        cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url) VALUES ('" + articleName + "','" + chooseCat +
+                     "', '" + price+ "' ,  '" + stockAmount + "'   ,'"+ url + "');")
+        # if desc != "": 
+        #     desc = "('" + request.form['description'] + "')"
+        #     cur.execute("INSERT INTO article_description (description, description_number ) VALUES (" +
+        #                 desc + ", (SELECT article_number FROM articles WHERE article_name=" + articleName + "));")
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))
