@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField
+from wtforms import StringField, SelectField,PasswordField, SubmitField, IntegerField
 from wtforms.validators import DataRequired
 
-
+    
 class AddCategoryForm(FlaskForm):
     name = StringField('Category name', validators=[DataRequired()])
     submitAdd = SubmitField("Add")
@@ -15,4 +15,6 @@ class EditCategoryForm(FlaskForm):
     new_name = StringField('Category name', validators=[DataRequired()])
     category_id = IntegerField('Category ID', validators=[DataRequired()])
     submitEdit = SubmitField("Edit")
+    
+
 
