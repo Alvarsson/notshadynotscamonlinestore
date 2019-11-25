@@ -31,7 +31,7 @@ def adminArticles():
     
     
     addArticle = AddArticleForm()
-    #addArticle.category.choices = categoryArray #fill dropdown with categories
+    addArticle.category.choices = categoryArray #fill dropdown with categories
     #print(addArticle.category.data)
     #print(addArticle.category.choices)
     
