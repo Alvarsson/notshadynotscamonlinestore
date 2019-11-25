@@ -1,0 +1,104 @@
+{% extends "public_template.html" %}
+
+{% block main %}
+
+
+
+
+<div class="container-fluid">
+
+    <h1>Edit Articles</h1>
+    <hr>
+    <div class="row d-flex justify-content-between">
+        <div class="col">
+            <form method="POST" action="/admin/articles" class="form-row" novalidate>
+                {{ addArticleForm.csrf_token }}
+
+                <div class="form-group col">
+                    {{ addArticleForm.name(class="form-control",placeholder="Article Name")  }}
+                </div>
+
+                <div class="form-group col">
+                    {{ addArticleForm.category(class="form-control",placeholder="Category") }}
+                </div>
+
+                <div class="form-group col">
+                    {{ addArticleForm.stock(class="form-control",placeholder="Set Stock")}}
+                </div>
+
+                <div class="form-group col">
+                    {{ addArticleForm.price(class="form-control",placeholder="Price")}}
+                </div>
+
+                <div class="form-group col">
+                    {{ addArticleForm.url(class="form-control",placeholder="URL")}}
+                </div>
+
+                <div class="form-group col">
+                    {{ addArticleForm.description(class="form-control",placeholder="Description")}}
+                </div>
+
+                <div class="form-group col">
+                    {{ addArticleForm.submitAddArticle(class="btn-primary btn")}}
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Left in Stock</th>
+                    <th scope="col">Price</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for artikel in articles %}
+                <tr>
+                    <div class="row">
+                        <th>{{artikel[0]}}</th>
+                        <td>{{ artikel[1] }}</td>
+                        <td>{{ artikel[2] }}</td>
+                        <td>{{ artikel[3] }}</td>
+                        <!--
+                    <td><button type="submit" class="btn-primary btn" name="remove">Remove</button></td>
+                    <td><button type="submit" class="btn-primary btn" name="edit">Edit</button></td>
+                    -->
+                    </div>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col">
+        <br>
+        <form action="/admin/articles" class="form-row" method="POST">
+
+            <div class="row">
+                <div class="col">
+                    <input type="text" class="form-control" id="removeid" name="removefield"
+                        placeholder="Choose id of article to remove" required>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn-primary btn" name="submit" value="remove">Remove</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
