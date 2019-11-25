@@ -18,3 +18,7 @@ def login():
         return redirect("login")
     return render_template("login.html", form=login_form)
 
+@bp.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('main.home'))
