@@ -9,22 +9,38 @@
   </div>
   <div class="col">
       <div class="row">
+          <div class="col">
+            <table class="table table-striped">
+                <tbody>
+                    {% for i in testy %}
+                    <tr>
+                        <th>{{ i }}</th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
            <table class="table table-striped">
               <tbody>
-              {% for item in artiklar %}
+                {% for i in userResult[0] %}
                 <tr>
-                  <th scope="row">{{ item }}</th>
-                  <td>{{ item }}</td>
+                    <td>{{ i }}</td>
                 </tr>
-              {% endfor %}
+                {% endfor %}
               </tbody>
             </table>
+        </div>
         </div>
         <div class="row">
             <form class="form-inline ml-auto">
                 <div class="form-group mx-sm-3 mb-2">
-                    <label for="number" class="sr-only">Number</label>
-                    <input type="number" class="form-control" id="number" placeholder="antal">
+                        <select class="form-control" id="edit" placeholder="Change something?" name="editUser" required>
+                                {% for item in testy %}
+                                tempval = {{ item[1] }}
+                                <option>{{ item }}</option>
+                                {% endfor %}
+                            </select>
                 </div>
                 <button type="submit" class="btn btn-primary mb-2">Change</button>
             </form>

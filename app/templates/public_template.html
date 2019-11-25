@@ -24,6 +24,13 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
+          <!--URL FÖR CART OCH USER MÅSTE HA LOGINKRAV!!  TOOOODOOOOO!!!!-->
+          <a class="nav-link" href="{{ url_for('main.cart') }}"><img height="20" src="{{ url_for('static', filename='img/shopcart.svg') }}"></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.user') }}"><img height="20" src="{{ url_for('static', filename='img/user.svg') }}"></a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link"{% if logged_in %} href="/logout">Logout{% else %} href="/login">Login{% endif %}</a>
         </li>
     </ul>
