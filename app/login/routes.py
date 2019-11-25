@@ -22,3 +22,16 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('main.home'))
+
+@bp.route("/registertest")
+def register_test():
+    username = "coola_killen69"
+    user = User.get_user(username=username)
+    if not user:
+        user = User(first_name="Alex", last_name="Träbek",
+                    username=username, mail="mail@mail.com",
+                    address="Ta vänster vid riksgränsen, sen rakt upp")
+        user.set_password("password123")
+        user.commit()
+    return redirect(url_for('main.home'))
+
