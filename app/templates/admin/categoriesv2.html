@@ -1,0 +1,95 @@
+{% extends "public_template.html" %}
+
+{% block main %}
+
+
+
+
+<div class="container-fluid">
+
+    <h1>Edit Categories</h1>
+    <hr>
+    <div class="row d-flex w-100 justify-content-between">
+        <div class="col">
+            <form method="POST" action="/admin/categories" class="form-row">
+                {{ addCategoryForm.csrf_token }}
+
+                <div class="form-group">
+                    {{ addCategoryForm.name(class="form-control",placeholder="Category Name") }}
+
+                </div>
+                <div class="form-group">
+                    {{ addCategoryForm.submitAdd(class="btn-primary btn") }}
+                </div>
+            </form>
+        </div>
+        <div class="col ">
+            <form method="POST" action="/admin/categories" class="form-row">
+                {{ removeCategoryForm.csrf_token }}
+
+                <div class="form-group">
+                    {{ removeCategoryForm.category_id(class="form-control",placeholder="Category ID") }}
+
+                </div>
+                <div class="form-group">
+                    {{ removeCategoryForm.submitRemove(class="btn-primary btn") }}
+                </div>
+            </form>
+        </div>
+        <div class="col">
+            <form method="POST" action="/admin/categories" class="form-row">
+                {{ editCategoryForm.csrf_token }}
+
+                <div class="form-group">
+                    {{ editCategoryForm.new_name(class="form-control",placeholder="Category Name")  }}
+                </div>
+
+                <div class="form-group">
+                    {{ editCategoryForm.category_id(class="form-control",placeholder="Category ID") }}
+
+                </div>
+                <div class="form-group">
+                    {{ editCategoryForm.submitEdit(class="btn-primary btn")}}
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">Name</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in categories %}
+                    <tr>
+                        <div class="row">
+                            <th>{{ item[1] }}</th>
+                            <td>{{ item[0] }}</td>
+                            <!-- Fan för det här albin. Släng dig i väggen alla älskar min nya lösning ändå.
+                    <td><button type="submit" class="btn-primary btn" name="submit" value="remove">Remove</button></td>
+                    <td><button type="submit" class="btn-primary btn" name="edit">Edit</button></td>
+                    -->
+                        </div>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+
+    </div>
+
+
+
+</div>
+
+{% endblock %}
