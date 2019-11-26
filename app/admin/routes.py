@@ -38,6 +38,9 @@ def adminArticles():
         price = str(addArticle.price.data)
         url = str(addArticle.url.data)
 
+        
+        desc = str(addArticle.description.data)
+
         cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url) VALUES ('" + articleName + "','" + chooseCat +
                      "', '" + price+ "' ,  '" + stockAmount + "'   ,'" + url + "');")
         if desc != "":
