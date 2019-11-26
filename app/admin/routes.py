@@ -36,12 +36,6 @@ def adminArticles():
         articleName = str(addArticle.name.data) 
         stockAmount = str(addArticle.stock.data)
         price = str(addArticle.price.data)
-<<<<<<< HEAD
-        url = str(addArticle.url.data)
-
-        cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url) VALUES ('" + articleName + "','" + chooseCat +
-                     "', '" + price+ "' ,  '" + stockAmount + "'   ,'"+ url + "');")
-=======
         url = str(addArticle.url.data) 
         desc = str(addArticle.description.data)
 
@@ -49,7 +43,6 @@ def adminArticles():
                      "', '" + price+ "' ,  '" + stockAmount + "'   ,'" + url + "');")
         if desc != "": 
             cur.execute("INSERT INTO article_description (art_description, description_id ) VALUES ('" + desc + "', (SELECT article_number FROM articles WHERE article_name='" + articleName + "'));")
->>>>>>> 32d871843a9db7c8e69748a7929e4dbfd1ea13b0
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))
