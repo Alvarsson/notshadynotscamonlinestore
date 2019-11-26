@@ -2,7 +2,7 @@ from flask import render_template, url_for, redirect, flash
 from flask_login import login_user, logout_user, current_user
 from app.login import login_bp as bp
 from app.login.user import User
-from app.login.forms import LoginForm
+from app.login.forms import LoginForm, RegisterForm
 
 @bp.route("/login", methods=['GET', 'POST'])
 def login():
@@ -23,15 +23,20 @@ def logout():
     logout_user()
     return redirect(url_for('main.home'))
 
-@bp.route("/registertest")
-def register_test():
-    username = "coola_killen69"
-    user = User.get_user(username=username)
-    if not user:
-        user = User(first_name="Alex", last_name="Träbek",
-                    username=username, mail="mail@mail.com",
-                    address="Ta vänster vid riksgränsen, sen rakt upp")
-        user.set_password("password123")
+@bp.route("/register", methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user = User(first_name=form.first_name.data,
+                    last_name=form.last_name.data,
+                    username=form.username.data,
+                    mail=form.mail.data,
+                    address=form.address.data)
+        user.set_password(form.password.data)
         user.commit()
-    return redirect(url_for('main.home'))
+        flash("Du är nu registrerad")
+        return redirect(url_for('login.login'))
+    return render_template('register.html', form=form)
 

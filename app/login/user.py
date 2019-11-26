@@ -29,13 +29,16 @@ class User(UserMixin):
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     @staticmethod
-    def get_user(user_id=None, username=None):
+    def get_user(user_id=None, username=None, mail=None):
         if user_id:
             q = "customer_id"
             p = user_id
         elif username:
             q = "user_name"
             p = username
+        elif mail:
+            q = 'mail'
+            p = mail
         else:
             return None
 
