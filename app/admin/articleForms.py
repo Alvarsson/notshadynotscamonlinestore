@@ -9,9 +9,9 @@ class AddArticleForm(FlaskForm):
                 #(32, 'aaaa'), (38, 'aaaaaaaaaaaaaaaaa'), (27, 'aaakkkiiariir'), (28, 'ddd'), (18, 'hejsan'), (30, 'kkakaaka'), (46, 'naaaa'), (48, 'nu då!?'), (41, 'okidoke'), (42, 'okieo'), (49, 'rrrr'), (47, 's'), (19, 'tjosan'), (29, 'tysk')]
 
     name = StringField('Article name', validators=[DataRequired()])
-    category = SelectField('Category ID', coerce=int)
-    stock = IntegerField('Stock')
-    price = IntegerField('Price')
+    category = SelectField('Category ID', validators=[DataRequired()], coerce=int)
+    stock = IntegerField('Stock', validators=[DataRequired()])
+    price = IntegerField('Price', validators=[DataRequired()])
     url = StringField('URL')
     description = StringField('Description')
     submitAddArticle = SubmitField("Add Article")
