@@ -13,11 +13,6 @@ class AddArticleForm(FlaskForm):
     stock = IntegerField('Stock')
     price = IntegerField('Price')
     url = StringField('URL')
-    # description = StringField('Description')
+    description = StringField('Description')
     submitAddArticle = SubmitField("Add Article")
 
-#      <!--
-#                 <div class = "form-group col" >
-#                     {{  # addArticleForm.description(class="form-control",placeholder="Description")}}
-#                 < /div >
-# - ->
