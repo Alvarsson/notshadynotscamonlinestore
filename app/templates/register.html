@@ -1,0 +1,36 @@
+{% extends "public_template.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block main %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Register</h1>
+      <hr>
+      <form method="POST" action="/register">
+          {{ form.csrf_token }}
+          {{ form.username.label }}{{ form.username(class_='form-control') }}
+          {{ form.password.label }}{{ form.password(class_='form-control p-2') }}
+          {{ form.mail.label }}{{ form.mail(class_='form-control') }}
+          {{ form.first_name.label }}{{ form.first_name(class_='form-control') }}
+          {{ form.last_name.label }}{{ form.last_name(class_='form-control') }}
+          {{ form.address.label }}{{ form.address(class_='form-control') }}
+          <hr>
+          {{ form.submit(class_='btn btn-primary') }}
+      </form>
+      {% if form.errors %}
+    <ul class="errors">
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %} 
