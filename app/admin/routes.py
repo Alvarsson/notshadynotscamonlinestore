@@ -26,34 +26,31 @@ def adminArticles():
     articlesArray = []
     for art in cur.fetchall():
         articlesArray.append(art)
-        
+
     addArticle = AddArticleForm()
     addArticle.category.choices = categoryArray #fill dropdown with categories
-    
+
     if addArticle.validate_on_submit() and addArticle.submitAddArticle.data:
         print(str(addArticle.category.data))
         chooseCat = str(addArticle.category.data)
-        articleName = str(addArticle.name.data) 
+        articleName = str(addArticle.name.data)
         stockAmount = str(addArticle.stock.data)
         price = str(addArticle.price.data)
-<<<<<<< HEAD
         url = str(addArticle.url.data)
 
         cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url) VALUES ('" + articleName + "','" + chooseCat +
                      "', '" + price+ "' ,  '" + stockAmount + "'   ,'"+ url + "');")
-=======
-        url = str(addArticle.url.data) 
+        url = str(addArticle.url.data)
         desc = str(addArticle.description.data)
 
         cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url) VALUES ('" + articleName + "','" + chooseCat +
                      "', '" + price+ "' ,  '" + stockAmount + "'   ,'" + url + "');")
-        if desc != "": 
+        if desc != "":
             cur.execute("INSERT INTO article_description (art_description, description_id ) VALUES ('" + desc + "', (SELECT article_number FROM articles WHERE article_name='" + articleName + "'));")
->>>>>>> 32d871843a9db7c8e69748a7929e4dbfd1ea13b0
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))
-   
+
     return render_template("admin/articlesv2.html", addArticleForm = addArticle, articles=articlesArray)
 
 @bp.route("/admin/categories", methods=['POST', 'GET'])
@@ -65,7 +62,7 @@ def adminCategories():
     categoryArray = []
     for i in cur.fetchall():
         categoryArray.append(i)
-        
+
     addCategory = AddCategoryForm()
     removeCategory = RemoveCategoryForm()
     editCategory = EditCategoryForm()
@@ -78,18 +75,18 @@ def adminCategories():
         cur.close()
         return redirect(url_for('admin.adminCategories'))
 
-    
+
     elif removeCategory.validate_on_submit() and removeCategory.submitRemove.data:
         deleteCat = removeCategory.category_id.data
         cur.execute("DELETE FROM categories WHERE category_id=" + str(deleteCat))
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminCategories'))
-    
+
     elif editCategory.validate_on_submit() and editCategory.submitEdit.data:
         catID = str(editCategory.category_id.data)
         newName = str(editCategory.new_name.data)
-        
+
         cur.execute("UPDATE categories SET category_name ='" + newName + "' WHERE category_id = " + catID +";")
         db.connection.commit()
         cur.close()
