@@ -9,11 +9,6 @@ artiklar = [["edward",'Username:'],["albin", 'First name:'], ["axel", 'Sur name:
 testy = ['Username', 'First name', 'Sur name', 'Email', 'Adress', 'Password']
 #kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
 
-@bp.route("/test")
-def testsite():
-
-    return render_template("article.html", artiklar = artiklar)
-
 
 @bp.route("/")
 def home():
@@ -23,7 +18,6 @@ def home():
     categories = []
     for i in cur.fetchall():
         category = (int(i[0]),i[1])
-
         categories.append(category)
     print(categories)
     return render_template("index.html", ArrayMedTräd = categories)
@@ -32,7 +26,6 @@ def home():
 @bp.route("/category/<int:category_id>")
 def category(category_id):
     cur = db.connection.cursor()
-    #cur.execute("SELECT * FROM articles WHERE category = " + str(category_id))
     cur.execute("SELECT * FROM articles INNER JOIN categories ON articles.category=categories.category_id WHERE categories.category_id=" + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
     result = list()
     for i in cur.fetchall():
