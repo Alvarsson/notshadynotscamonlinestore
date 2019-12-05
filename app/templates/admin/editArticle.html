@@ -1,0 +1,64 @@
+{% extends "public_template.html" %}
+
+{% block main %}
+
+
+
+<div class="container">
+
+    <h1>Edit {{articleNumber}} </h1>
+    <hr>
+    <div class="col">
+
+        <form method="POST" action={{ url_for('admin.adminEditArticle',article_number=articleNumber )}}>
+            {{ editArticleForm.hidden_tag() }}
+
+            <div class="form-group">
+                {{ editArticleForm.name.label}}
+
+                {{ editArticleForm.name(class="form-control",placeholder="Article Name")}}
+            </div>
+
+
+            <div class="form-group">
+                {{ editArticleForm.category.label}}
+
+                {{ editArticleForm.category(class="form-control",placeholder="Category") }}
+            </div>
+
+            <div class="form-group">
+                {{ editArticleForm.stock.label}}
+
+                {{ editArticleForm.stock(class="form-control",placeholder="Set Stock")}}
+            </div>
+
+            <div class="form-group">
+                {{ editArticleForm.price.label}}
+
+                {{ editArticleForm.price(class="form-control",placeholder="Price")}}
+            </div>
+            <div class="form-group">
+                {{ editArticleForm.url.label}}
+
+                {{ editArticleForm.url(class="form-control",placeholder="URL")}}
+            </div>
+
+            <div class="form-group">
+                {{ editArticleForm.description.label}}
+
+                {{ editArticleForm.description(class="form-control",placeholder="Description")}}
+                {{ editArticleForm.submitArticle(class="btn-primary btn")}}
+
+            </div>
+
+
+        </form>
+
+
+
+    </div>
+
+</div>
+
+
+{% endblock %}

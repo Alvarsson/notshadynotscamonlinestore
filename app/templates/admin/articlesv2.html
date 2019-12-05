@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="form-group col">
-                    {{ addArticleForm.submitAddArticle(class="btn-primary btn")}}
+                    {{ addArticleForm.submitArticle(class="btn-primary btn")}}
                 </div>
 
             </form>
@@ -49,53 +49,54 @@
     </div>
 
 
-</div>
 
-<div class="row">
-    <div class="col">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Left in Stock</th>
-                    <th scope="col">Price</th>
-                </tr>
-            </thead>
 
-            <tbody>
-                {% for artikel in articles %}
-                <tr>
-                    <div class="row">
-                        <th>{{artikel[0]}}</th>
-                        <td>{{ artikel[1] }}</td>
-                        <td>{{ artikel[2] }}</td>
-                        <td>{{ artikel[3] }}</td>
-                    
-                    </div>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="col">
-        <br>
-        <form action="/admin/articles" class="form-row" method="POST">
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Left in Stock</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Category</th>
+                    </tr>
+                </thead>
 
-            <div class="row">
-                <div class="col">
-                    <input type="text" class="form-control" id="removeid" name="removefield"
-                        placeholder="Choose id of article to remove" required>
+                <tbody>
+                    {% for artikel in articles %}
+                    <tr>
+                        <div class="row">
+                            <th>{{artikel[0]}}</th>
+                            <td><a href="{{ url_for('admin.adminEditArticle',article_number=artikel[0])}}">{{ artikel[3] }}</a></td>
+                            <td>{{ artikel[1] }}</td>
+                            <td>{{ artikel[4] }}</td>
+                            <td>{{ artikel[2] }}</td>
+                        </div>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <br>
+            <form method="POST" action="/admin/articles" class="form-row">
+                {{ removeArticleForm.csrf_token }}
+
+                <div class="form-group col">
+                    {{ removeArticleForm.article(class="form-control",placeholder="Article Id")  }}
                 </div>
-                <div class="col">
-                    <button type="submit" class="btn-primary btn" name="submit" value="remove">Remove</button>
+
+                <div class="form-group col">
+                    {{ removeArticleForm.submitRemoveArticle(class="btn-primary btn")}}
                 </div>
-            </div>
-        </form>
+
+            </form>
+        </div>
     </div>
+
 </div>
-
-
 
 
 {% endblock %}
