@@ -1,4 +1,7 @@
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, current_app
+from flask_login import current_user, login_required
+from flask_login.config import EXEMPT_METHODS
+from functools import wraps
 from app.admin import admin_bp as bp
 from app import db
 from app.admin.forms import AddCategoryForm, RemoveCategoryForm, EditCategoryForm
@@ -7,8 +10,27 @@ from app.admin.articleForms import ArticleForm,RemoveArticleForm
 
 artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
 
+def admin_required(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if request.method in EXEMPT_METHODS:
+            return func(*args, **kwargs)
+        elif current_app.config.get('LOGIN_DISABLED'):
+            return func(*args, **kwargs)
+        elif not (current_user.is_authenticated and current_user.admin):
+            return current_app.login_manager.unauthorized()
+        return func(*args, **kwargs)
+    return decorated_view
+
+#Helperfunktion -- Skönt för att kunna debugga -- Ta bort i när vi går live
+@bp.route("/userinfo")
+def user_info():
+    if current_user.is_authenticated:
+        return str(current_user)
+    return "Not logged in"
 
 @bp.route("/admin")
+@admin_required
 def admin():
     return render_template("admin/overview.html", artiklar=artiklar)
 
@@ -17,9 +39,9 @@ def admin():
 def adminEditArticle(article_number):
 
     editArticle=ArticleForm(article_number)
-    
+
     if editArticle.validate_on_submit() and editArticle.submitArticle.data:
-        
+
         cur = db.connection.cursor()
         print(editArticle.name.data)
 
@@ -27,14 +49,14 @@ def adminEditArticle(article_number):
         newName = str(editArticle.name.data)
         newStock = str(editArticle.stock.data)
         newPrice = str(editArticle.price.data)
-        
+
         newPicture = str(editArticle.url.data)
         ###########################glöm inte kategori. problem med att nuvarande inte visas när man skriver .data delen...
         cur.execute("UPDATE articles SET article_name= " + "'" + newName + "'" +", stock_quantity=" +  newStock + ", price=" + newPrice + ",picture_url='" + newPicture  +  "' WHERE article_number= " + str(article_number) +";")
         #cur.execute("UPDATE articles SET article_name= " + "'" + newName + "' WHERE article_number= " + str(article_number) +";")
 
         #cur.execute("""UPDATE articles SET article_name = "TallTall", stock_quantity= 123, price= 124, picture_url= "texas.com"  WHERE article_number=2;""")
-        
+
         newDescription = str(editArticle.description.data)
         if newDescription != "":
             #upsert, så infoga ny rad om ingen finns, annars uppdatera googla det
@@ -44,7 +66,7 @@ def adminEditArticle(article_number):
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))
-        
+
     return render_template("admin/editArticle.html",editArticleForm = editArticle, articleNumber = article_number)
 
 
@@ -164,8 +186,6 @@ def adminUsers():
             cur.close()
             return redirect(url_for('admin.adminUsers'))
     return render_template("admin/users.html", users=userArray)
-
-
 
 
 # @bp.route("/admin/articles", methods=['POST', 'GET'])

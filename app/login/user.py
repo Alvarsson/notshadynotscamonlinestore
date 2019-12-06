@@ -1,4 +1,5 @@
 from flask_login import UserMixin
+from flask import current_app
 from app import bcrypt
 from app import db
 from app import login_manager
@@ -21,6 +22,11 @@ class User(UserMixin):
         self.password = password
         self.mail = mail
         self.address = address
+
+        if self.username in current_app.config['ADMIN_USERS']:
+            self.admin = True
+        else:
+            self.admin = False
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.password, password)
@@ -87,9 +93,10 @@ class User(UserMixin):
                 'username': self.username,
                 'password': self.password,
                 'mail': self.mail,
-                'address': self.address}
-
+                'address': self.address,
+                'admin': self.admin}
 
 @login_manager.user_loader
 def load_user(id):
     return User.get_user(user_id=int(id))
+
