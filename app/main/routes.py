@@ -1,6 +1,7 @@
 from flask import render_template,url_for
 from app.main import main_bp as bp
 from app import db
+from flask_login import login_user, logout_user, current_user
 
 
  #Static test input
@@ -13,7 +14,7 @@ testy = ['Username', 'First name', 'Sur name', 'Email', 'Adress', 'Password']
 @bp.route("/")
 def home():
     cur = db.connection.cursor()
-    cur.execute("SELECT * FROM categories ORDER BY category_name")
+    cur.execute("SELECT * FROM categories INNER JOIN articles  ON categories.category_id = articles.category GROUP BY categories.category_name")
 
     categories = []
     for i in cur.fetchall():
@@ -53,6 +54,7 @@ def article(article_number):
 @bp.route("/user")
 def user():
     #Få in inlogginformation om användare här!
+    
     cur = db.connection.cursor()
     cur.execute("SELECT user_name, first_name, last_name, mail, adress FROM users WHERE customer_id="+ str(2))
     userResult = []
@@ -60,7 +62,7 @@ def user():
         userResult.append(i)
     
 
-    return render_template("user.html", testy = testy, userResult = userResult)
+    return render_template("user.html", testy = testy, userResult = current_user)
 
 @bp.route("/user/cart")
 def cart():
