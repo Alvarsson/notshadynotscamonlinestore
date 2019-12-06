@@ -36,6 +36,7 @@ def admin():
 
 
 @bp.route("/admin/editArticle/<int:article_number>", methods=['POST', 'GET'])
+@admin_required
 def adminEditArticle(article_number):
 
     editArticle=ArticleForm(article_number)
@@ -72,6 +73,7 @@ def adminEditArticle(article_number):
 
 
 @bp.route("/admin/articles", methods=['POST', 'GET'])
+@admin_required
 def adminArticles():
 
     cur = db.connection.cursor()
@@ -125,6 +127,7 @@ def adminArticles():
     return render_template("admin/articlesv2.html", addArticleForm = addArticle, articles=articlesArray,removeArticleForm=removeArticle)
 
 @bp.route("/admin/categories", methods=['POST', 'GET'])
+@admin_required
 def adminCategories():
 
     # Fetchar data från nuvarande kategoritabell och skriver ut på sidan
@@ -170,6 +173,7 @@ def adminCategories():
 
 
 @bp.route("/admin/users", methods=['POST', 'GET'])
+@admin_required
 def adminUsers():
     cur = db.connection.cursor()
     cur.execute(
