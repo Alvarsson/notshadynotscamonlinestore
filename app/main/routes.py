@@ -26,22 +26,28 @@ def home():
 @bp.route("/category/<int:category_id>")
 def category(category_id):
     cur = db.connection.cursor()
-    cur.execute("SELECT * FROM articles INNER JOIN categories ON articles.category=categories.category_id WHERE categories.category_id=" + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
+    cur.execute("SELECT article_number,picture_url,article_name,price,category_name FROM articles INNER JOIN categories ON articles.category=categories.category_id WHERE categories.category_id=" + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
+    
     result = list()
+    images = list()
+
     for i in cur.fetchall():
+        
+        #i[1]=url_for('static', filename='img/user.svg')  if i[1] == '' else i[1]
         result.append(i)
+    
 
-    #print(result)
-
-    return render_template("kategori.html", artiklar = result,title=result[0][7])
+    return render_template("kategori.html", artiklar = result,title=result[0][4],images = images)
 
 
 @bp.route("/article/<int:article_number>")
 def article(article_number):
     cur = db.connection.cursor()
-    cur.execute("SELECT * FROM articles WHERE article_number = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
+    cur.execute("SELECT article_number,picture_url,article_name,price FROM articles WHERE article_number = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
 
-    return render_template("article.html", artiklar = [i[5] for i in cur.fetchall()])
+    result = cur.fetchone()
+
+    return render_template("article.html", artiklar = result,picture=result[1])
 
 
 @bp.route("/user")

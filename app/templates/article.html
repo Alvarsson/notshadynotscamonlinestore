@@ -5,7 +5,7 @@
 <div class="container">
  <div class="row">
   <div class="col">
-	  <img class="mw-100" src="https://i.kym-cdn.com/photos/images/newsfeed/001/231/093/451">
+	  <img class="img-fluid mw-100" src="{{ url_for('static', filename='img/noimage.png')  if picture == '' else picture}}">
    <h2>This is the name of the article</h2>
   </div>
   <div class="col">

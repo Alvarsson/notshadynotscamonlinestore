@@ -8,18 +8,21 @@
 
     <ul>
         {% for item in artiklar %}
-        <li class="list-group-item list-group-item list-group-item-action flex-column align-items-start">
+        <li class="list-group-item list-group-item-action flex-column align-items-start">
             <a href="{{ url_for('main.article',article_number=item[0] ) }}">
-                <div class="d-flex w-100 justify-content-between">
-                    <img src="https://www.mcdonalds.com/etc/designs/mcdonalds/en/_jcr_content/genericpage/genericpagecontent/sitelevelconfiguration/logoimage.img.png"
-                        }>
+                <div class="row d-flex w-100 ">
+                    <div class="col">
+                        <img class="img-fluid mw-100"
+                            src="{{ url_for('static', filename='img/noimage.png') if item[1] == '' else item[1]}}">
+                    </div>
+                    <div class="col-5">
+                        <h5>{{item[2]}}</h5>
+                    </div>
+                    <div class="col">   
+                        <medium >{{item[3]}} kr</medium>
+                    </div>
 
-                    <h5 class="mb-1">{{item[5]}}</h5>
-                    <medium>{{item[4]}} kr</medium>
                 </div>
-                <!-- <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus
-                            varius blandit.</p>
-                        <small>Donec id elit non mi porta.</small> -->
             </a>
         </li>
         {% endfor %}
