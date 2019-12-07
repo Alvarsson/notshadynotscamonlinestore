@@ -50,7 +50,7 @@ class User(UserMixin):
 
         cur = db.connection.cursor()
         cur.execute("""SELECT customer_id, first_name, last_name,
-                    user_name, password, mail, adress
+                    user_name, password, mail, address
                     FROM users WHERE """ + q + " = %s", (p,))
         res = cur.fetchone()
 
@@ -79,7 +79,7 @@ class User(UserMixin):
                     user_name = %(username)s,
                     password = %(password)s,
                     mail = %(mail)s,
-                    adress = %(address)s
+                    address = %(address)s
                     """, self.to_dict())
         db.connection.commit()
 
