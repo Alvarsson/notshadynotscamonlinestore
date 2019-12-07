@@ -1,3 +1,0 @@
-List of all our references:
-gitignore
-
