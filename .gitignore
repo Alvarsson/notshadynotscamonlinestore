@@ -28,6 +28,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.DS_Store
 .Python
 venv/
 build/
