@@ -1,7 +1,9 @@
-from flask import render_template,url_for
+from flask import render_template, url_for, flash, redirect, request
 from app.main import main_bp as bp
 from app import db
-from flask_login import login_user, logout_user, current_user
+from app.login.forms import EditUserForm
+from flask_login import login_user, logout_user, current_user, login_required
+from app.login.user import User
 
 
  #Static test input
@@ -28,15 +30,15 @@ def home():
 def category(category_id):
     cur = db.connection.cursor()
     cur.execute("SELECT article_id,url,articles.name,price,categories.name FROM articles INNER JOIN categories ON articles.category_id=categories.category_id WHERE categories.category_id=" + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
-    
+
     result = list()
     images = list()
 
     for i in cur.fetchall():
-        
+
         #i[1]=url_for('static', filename='img/user.svg')  if i[1] == '' else i[1]
         result.append(i)
-    
+
 
     return render_template("kategori.html", artiklar = result,title=result[0][4],images = images)
 
@@ -52,21 +54,36 @@ def article(article_number):
 
 
 @bp.route("/user")
+@login_required
 def user():
-    #Få in inlogginformation om användare här!
-    
-    cur = db.connection.cursor()
-    cur.execute("SELECT user_name, first_name, last_name, mail, address FROM users WHERE customer_id="+ str(2))
-    userResult = []
-    for i in cur.fetchall():
-        userResult.append(i)
-    
+    return render_template("user.html")
 
-    return render_template("user.html", testy = testy, userResult = current_user)
+@bp.route("/user/edit", methods=['GET', 'POST'])
+@login_required
+def edit_user():
+    form = EditUserForm()
+    if request.method == 'GET':
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
+        form.address.data = current_user.address
+        form.mail.data = current_user.mail
+    if form.validate_on_submit():
+        user = User(first_name=form.first_name.data,
+                    last_name=form.last_name.data,
+                    username=current_user.username,
+                    password=current_user.password,
+                    mail=form.mail.data,
+                    address=form.address.data)
+        if not form.password.data == '':
+            user.set_password(form.password.data)
+        user.commit()
+        return redirect(url_for('main.user'))
+    return render_template('user_edit.html', form=form)
+
 
 @bp.route("/user/cart")
 def cart():
-    
+
     return render_template("user.html", artiklar = artiklar)
 
 

@@ -5,64 +5,71 @@
 <div class="container">
  <div class="row">
   <div class="col">
-   <h2>John Doe</h2>
+      <h2>{{ current_user.first_name }} {{ current_user.last_name }}</h2>
   </div>
   <div class="col">
       <div class="row">
           <div class="col">
             <table class="table table-striped">
                 <tbody>
-                    {% for i in testy %}
                     <tr>
-                        <th>{{ i }}</th>
+                        <th>Username</th>
+                        <td>{{ current_user.username }}</td>
                     </tr>
-                    {% endfor %}
+                    <tr>
+                        <th>First Name</th>
+                        <td>{{ current_user.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Name</th>
+                        <td>{{ current_user.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>E-mail</th>
+                        <td>{{ current_user.mail }}</td>
+                    </tr>
+                    <tr>
+                        <th>Address</th>
+                        <td>{{ current_user.address }}</td>
+                    </tr>
                 </tbody>
             </table>
-        </div>
-        <div class="col">
-           <table class="table table-striped">
-              <tbody>
-                {% for i in userResult[0] %}
-                <tr>
-                    <td>{{ i }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-        </div>
-        </div>
+          </div>
+       </div>
+       </div>
+    </div>
         <div class="row">
-            <form class="form-inline ml-auto">
-                <div class="form-group mx-sm-3 mb-2">
-                        <select class="form-control" id="edit" placeholder="Change something?" name="editUser" required>
-                                {% for item in testy %}
-                                tempval = {{ item[1] }}
-                                <option>{{ item }}</option>
-                                {% endfor %}
-                            </select>
-                </div>
-                <button type="submit" class="btn btn-primary mb-2">Change</button>
-            </form>
+                <button onclick="location.href='/user/edit'" type="button" class="btn btn-primary mb-2 ml-auto">Change</button>
         </div>
   </div>
  </div>
 </div>
 
-<div class="container ">
+<div class="container">
     <div class="row">
         <h1>Ordrar</h1>
     </div>
-    {% for item in artiklar %}
-    <div class="row">
-        {% if loop.index0 % 2 == 0 %}
-        <div class="col bg-light">
-        {% else %}
-        <div class="col bg-secondary text-white">
-        {% endif %}
-            <p>Order {{ loop.index }} {{ item }}</p>
-        </div>
-    </div>
-    {% endfor %}
+    <ul>
+        {% for item in artiklar %}
+        <li class="list-group-item list-group-item-action flex-column align-items-start">
+            <a href="{{ url_for('main.article',article_number=item[0] ) }}">
+                <div class="row d-flex w-100 ">
+                    <div class="col">
+                        <img class="img-fluid mw-100"
+                            src="{{ url_for('static', filename='img/noimage.png') if item[1] == '' else item[1]}}">
+                    </div>
+                    <div class="col-5">
+                        <h5>{{item[2]}}</h5>
+                    </div>
+                    <div class="col">   
+                        <medium>{{item[3]}} kr</medium>
+                    </div>
+
+                </div>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+
 </div>
 {% endblock %}
