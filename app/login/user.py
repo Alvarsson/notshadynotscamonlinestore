@@ -66,7 +66,7 @@ class User(UserMixin):
                     `user_name`,
                     `password`,
                     `mail`,
-                    `adress`) VALUES
+                    `address`) VALUES
                     (%(first_name)s,
                     %(last_name)s,
                     %(username)s,
