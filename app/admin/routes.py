@@ -30,7 +30,7 @@ def adminEditArticle(article_number):
         
         newPicture = str(editArticle.url.data)
         ###########################glöm inte kategori. problem med att nuvarande inte visas när man skriver .data delen...
-        cur.execute("UPDATE articles SET article_name= " + "'" + newName + "'" +", stock_quantity=" +  newStock + ", price=" + newPrice + ",picture_url='" + newPicture  +  "' WHERE article_number= " + str(article_number) +";")
+        cur.execute("UPDATE articles SET name= " + "'" + newName + "'" +", stock=" +  newStock + ", price=" + newPrice + ",url='" + newPicture  +  "' WHERE article_id= " + str(article_number) +";")
         #cur.execute("UPDATE articles SET article_name= " + "'" + newName + "' WHERE article_number= " + str(article_number) +";")
 
         #cur.execute("""UPDATE articles SET article_name = "TallTall", stock_quantity= 123, price= 124, picture_url= "texas.com"  WHERE article_number=2;""")
@@ -38,7 +38,7 @@ def adminEditArticle(article_number):
         newDescription = str(editArticle.description.data)
         if newDescription != "":
             #upsert, så infoga ny rad om ingen finns, annars uppdatera googla det
-            cur.execute("INSERT INTO article_description (description_id,art_description) VALUES ( " + str(article_number) + ",'" + newDescription+ "') ON DUPLICATE KEY UPDATE art_description ='" + newDescription + "';")
+            cur.execute("INSERT INTO article_description (description_id,text) VALUES ( " + str(article_number) + ",'" + newDescription+ "') ON DUPLICATE KEY UPDATE text ='" + newDescription + "';")
             print("Uppdaterar eller infogar nya data i description tabellen")
 
         db.connection.commit()
@@ -55,7 +55,7 @@ def adminArticles():
     cur = db.connection.cursor()
 
     #Article list in adminview
-    cur.execute("SELECT article_number,stock_quantity,category_name,article_name,price FROM articles INNER JOIN categories ON articles.category=categories.category_id;")
+    cur.execute("SELECT article_id,stock,categories.name,articles.name,price FROM articles INNER JOIN categories ON articles.category_id=categories.category_id;")
     articlesArray = []
     for article in cur.fetchall():
         articlesArray.append(article)
@@ -75,11 +75,11 @@ def adminArticles():
         url = str(addArticle.url.data)
         desc = str(addArticle.description.data)
 
-        cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url) VALUES ('" + articleName + "','" + chooseCat +
+        cur.execute("INSERT INTO articles (name, category, price, stock,url) VALUES ('" + articleName + "','" + chooseCat +
                      "', '" + price+ "' ,  '" + stockAmount + "'   ,'" + url + "');")
         if desc != "":
-            cur.execute("INSERT INTO article_description (art_description, description_id ) VALUES ('" + desc +
-             "', (SELECT article_number FROM articles WHERE article_name='" + articleName + "'));")
+            cur.execute("INSERT INTO article_description (text, description_id ) VALUES ('" + desc +
+             "', (SELECT article_id FROM articles WHERE name='" + articleName + "'));")
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))
@@ -87,7 +87,7 @@ def adminArticles():
 
     if removeArticle.validate_on_submit() and removeArticle.submitRemoveArticle.data:
         articleToRemove = str(removeArticle.article.data)
-        cur.execute("DELETE FROM articles WHERE article_number=" + articleToRemove + ";")
+        cur.execute("DELETE FROM articles WHERE article_id=" + articleToRemove + ";")
         print("removed article")
         db.connection.commit()
         cur.close()
@@ -107,7 +107,7 @@ def adminCategories():
 
     # Fetchar data från nuvarande kategoritabell och skriver ut på sidan
     cur = db.connection.cursor()
-    cur.execute("SELECT category_name, category_id FROM categories ORDER BY category_id ASC;")
+    cur.execute("SELECT name, category_id FROM categories ORDER BY category_id ASC;")
     categoryArray = []
     for i in cur.fetchall():
         categoryArray.append(i)
@@ -119,7 +119,7 @@ def adminCategories():
     if addCategory.validate_on_submit() and addCategory.submitAdd.data:
         newCategory = addCategory.name.data
         newCategory = "('" + str(newCategory) + "')"
-        cur.execute("INSERT INTO categories (category_name) VALUES" + newCategory + ";")
+        cur.execute("INSERT INTO categories (name) VALUES" + newCategory + ";")
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminCategories'))
@@ -137,7 +137,7 @@ def adminCategories():
         catID = str(editCategory.category_id.data)
         newName = str(editCategory.new_name.data)
 
-        cur.execute("UPDATE categories SET category_name ='" + newName + "' WHERE category_id = " + catID +";")
+        cur.execute("UPDATE categories SET name ='" + newName + "' WHERE category_id = " + catID +";")
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminCategories'))

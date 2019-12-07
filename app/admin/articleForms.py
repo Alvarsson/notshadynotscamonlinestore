@@ -17,7 +17,7 @@ class ArticleForm(FlaskForm):
     def __init__(self,article_number=None):
         super(ArticleForm, self).__init__() 
         cur = db.connection.cursor()
-        cur.execute("SELECT category_id,category_name FROM categories")
+        cur.execute("SELECT category_id,name FROM categories")
         categoryArray = []
         for cat in cur.fetchall():
             categoryArray.append(cat)
@@ -35,10 +35,10 @@ class ArticleForm(FlaskForm):
         #print("om du kommit in i edit specific article delen, så påbörjar en annorlunda articleform")
         cur = db.connection.cursor()
 
-        cur.execute("""SELECT article_number,stock_quantity,category_id,article_name,price,picture_url,art_description FROM articles
-         left JOIN categories ON articles.category=categories.category_id 
-         left join article_description on articles.article_number=article_description.description_id 
-         where article_number =""" + str(article_number) + ";")
+        cur.execute("""SELECT article_id,stock,category_id,articles.name,price,url,text FROM articles
+         left JOIN categories ON articles.category_id=categories.category_id 
+         left join description on articles.article_id=description.description_id 
+         where article_id=""" + str(article_number) + ";")
         
         query = cur.fetchone()
         db.connection.commit()

@@ -14,7 +14,7 @@ testy = ['Username', 'First name', 'Sur name', 'Email', 'Adress', 'Password']
 @bp.route("/")
 def home():
     cur = db.connection.cursor()
-    cur.execute("SELECT * FROM categories INNER JOIN articles  ON categories.category_id = articles.category GROUP BY categories.category_name")
+    cur.execute("SELECT * FROM categories INNER JOIN articles ON categories.category_id = articles.category_id GROUP BY categories.name")
 
     categories = []
     for i in cur.fetchall():
@@ -27,7 +27,7 @@ def home():
 @bp.route("/category/<int:category_id>")
 def category(category_id):
     cur = db.connection.cursor()
-    cur.execute("SELECT article_number,picture_url,article_name,price,category_name FROM articles INNER JOIN categories ON articles.category=categories.category_id WHERE categories.category_id=" + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
+    cur.execute("SELECT article_id,url,articles.name,price,categories.name FROM articles INNER JOIN categories ON articles.category_id=categories.category_id WHERE categories.category_id=" + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
     
     result = list()
     images = list()
@@ -44,7 +44,7 @@ def category(category_id):
 @bp.route("/article/<int:article_number>")
 def article(article_number):
     cur = db.connection.cursor()
-    cur.execute("SELECT article_number,picture_url,article_name,price FROM articles WHERE article_number = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
+    cur.execute("SELECT article_id,url,name,price FROM articles WHERE article_id = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
 
     result = cur.fetchone()
 
@@ -56,7 +56,7 @@ def user():
     #Få in inlogginformation om användare här!
     
     cur = db.connection.cursor()
-    cur.execute("SELECT user_name, first_name, last_name, mail, adress FROM users WHERE customer_id="+ str(2))
+    cur.execute("SELECT user_name, first_name, last_name, mail, address FROM users WHERE customer_id="+ str(2))
     userResult = []
     for i in cur.fetchall():
         userResult.append(i)
