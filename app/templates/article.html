@@ -22,12 +22,17 @@
             </table>
         </div>
         <div class="row">
-            <form class="form-inline ml-auto">
-                <div class="form-group mx-sm-3 mb-2">
-                    <label for="number" class="sr-only">Number</label>
-                    <input type="number" class="form-control" id="number" placeholder="antal">
+            <form method="POST" class="form-inline ml-auto" action="/article/5">
+                {{ addToCartForm.csrf_token }}
+                <div class="col">
+                    {{ addToCartForm.quantity(class="form-control")}}
                 </div>
-                <button type="submit" class="btn btn-primary mb-2">Buy</button>
+
+                <div class="col">
+                    {{ addToCartForm.submit(class="btn-primary btn")}}
+                </div>
+
+
             </form>
         </div>
   </div>

@@ -5,6 +5,7 @@ from app.login.forms import EditUserForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.login.user import User
 
+from app.main.forms import AddToCartForm
 
  #Static test input
 artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
@@ -43,14 +44,49 @@ def category(category_id):
     return render_template("kategori.html", artiklar = result,title=result[0][4],images = images)
 
 
-@bp.route("/article/<int:article_number>")
+@bp.route("/article/<int:article_number>", methods=['GET', 'POST'])
 def article(article_number):
     cur = db.connection.cursor()
     cur.execute("SELECT article_id,url,name,price FROM articles WHERE article_id = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
 
-    result = cur.fetchone()
+    result = cur.fetchone() #
+    
+    addToCart = AddToCartForm() 
+    
+    if addToCart.validate_on_submit() and addToCart.quantity.data:
+        
+        #DET HÄR ÄR SÄKERT INTE DET BÄSTA SÄTTET ATT GÖRA DETTA PÅ
+        cur = db.connection.cursor()
+        customer_id = current_user.id
+        
+        cur.execute("insert ignore into cart (customer_id) values (1);") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
+        
+        #finns även ny db <3 unique key på cart item
+        #kasta in article id här fan
+        #bör article id vara unique eller ska vi lösa det på vår sida med en get på eventuellt redan tillagda artiklar?
+        cur.execute("INSERT INTO cart_items (article_id, cart_id, quantity) VALUES("+ str(result[0]) +", (SELECT cart_id FROM cart WHERE customer_id = "+ str(customer_id) +"), "+ str(addToCart.quantity.data) +");") #HÄMTA ID FÖR CART
+       # cart_id = cur.fetchone() 
+        db.connection.commit()
+        cur.close()
+        #print(cur.fetchone())
+        
+        
+          
+# customer_id
 
-    return render_template("article.html", artiklar = result,picture=result[1])
+# insert ignore into cart (customer_id) values (1);
+
+# SELECT cart_id FROM cart;
+
+
+# INSERT INTO sprint3.cart_items
+# (article_id, cart_id, quantity)
+# VALUES(2, 9, 1);
+        
+    
+    
+
+    return render_template("article.html", artiklar = result,picture=result[1],addToCartForm = addToCart)
 
 
 @bp.route("/user")

@@ -48,7 +48,7 @@ class ArticleForm(FlaskForm):
         #editArticle=ArticleForm()
 
         self.name.data = query[3]
-        self.category.data = query[2]
+        self.category.data = query[2] 
         self.stock.data = query[1]
         self.price.data = query[4]
         self.url.data = query[5] if query[5] != None else ""
