@@ -86,7 +86,7 @@ class User(UserMixin):
     def __str__(self):
         return str(self.to_dict())
 
-    def to_dict(self):
+    def to_dict(self): #makes dictionary
         return {'user_id': self.id,
                 'first_name': self.first_name,
                 'last_name': self.last_name,

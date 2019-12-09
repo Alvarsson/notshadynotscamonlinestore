@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, Flask, abort
 from app.main import main_bp as bp
 from app import db
 from app.login.forms import EditUserForm
@@ -12,6 +12,11 @@ artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
 artiklar = [["edward",'Username:'],["albin", 'First name:'], ["axel", 'Sur name:'], ["blabla", 'Email:'], ["hejhej", 'Adress:']]
 testy = ['Username', 'First name', 'Sur name', 'Email', 'Adress', 'Password']
 #kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
+
+@bp.app_errorhandler(404)
+def invalid_route(e):
+    return render_template("404error.html", title="404"), 404 
+
 
 
 @bp.route("/")
