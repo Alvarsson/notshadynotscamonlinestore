@@ -50,10 +50,10 @@ def adminEditArticle(article_number):
         newName = str(editArticle.name.data)
         newStock = str(editArticle.stock.data)
         newPrice = str(editArticle.price.data)
-
+        newCategory = str(editArticle.category.data)
         newPicture = str(editArticle.url.data)
         ###########################glöm inte kategori. problem med att nuvarande inte visas när man skriver .data delen...
-        cur.execute("UPDATE articles SET name= " + "'" + newName + "'" +", stock=" +  newStock + ", price=" + newPrice + ",url='" + newPicture  +  "' WHERE article_id= " + str(article_number) +";")
+        cur.execute("UPDATE articles SET name= " + "'" + newName + "'" +", category= " + "'" + newCategory + "'" +", stock=" +  newStock + ", price=" + newPrice + ",url='" + newPicture  +  "' WHERE article_id= " + str(article_number) +";")
         #cur.execute("UPDATE articles SET article_name= " + "'" + newName + "' WHERE article_number= " + str(article_number) +";")
 
         #cur.execute("""UPDATE articles SET article_name = "TallTall", stock_quantity= 123, price= 124, picture_url= "texas.com"  WHERE article_number=2;""")

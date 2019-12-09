@@ -5,11 +5,11 @@ from app.login.forms import EditUserForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.login.user import User
 
-from app.main.forms import AddToCartForm
+from app.main.forms import AddToCartForm, CartForm
 
  #Static test input
 artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
-artiklar = [["edward",'Username:'],["albin", 'First name:'], ["axel", 'Sur name:'], ["blabla", 'Email:'], ["hejhej", 'Adress:']]
+#artiklar = [["edward",'Username:'],["albin", 'First name:'], ["axel", 'Sur name:'], ["blabla", 'Email:'], ["hejhej", 'Adress:']]
 testy = ['Username', 'First name', 'Sur name', 'Email', 'Adress', 'Password']
 #kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
 
@@ -47,44 +47,35 @@ def category(category_id):
 @bp.route("/article/<int:article_number>", methods=['GET', 'POST'])
 def article(article_number):
     cur = db.connection.cursor()
-    cur.execute("SELECT article_id,url,name,price FROM articles WHERE article_id = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
-
-    result = cur.fetchone() #
     
+    cur.execute("SELECT article_id,url,name,category_id,price FROM articles WHERE article_id = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
+
+    result = cur.fetchone() 
+    #print(result)
     addToCart = AddToCartForm() 
+    
     
     if addToCart.validate_on_submit() and addToCart.quantity.data:
         
-        #DET HÄR ÄR SÄKERT INTE DET BÄSTA SÄTTET ATT GÖRA DETTA PÅ
-        cur = db.connection.cursor()
+        
+        #cur = db.connection.cursor()
         customer_id = current_user.id
+        print(addToCart.quantity.data)
         
-        cur.execute("insert ignore into cart (customer_id) values (1);") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
+        cur.execute("insert ignore into cart (customer_id) values ("+str(customer_id)+");") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
         
-        #finns även ny db <3 unique key på cart item
-        #kasta in article id här fan
-        #bör article id vara unique eller ska vi lösa det på vår sida med en get på eventuellt redan tillagda artiklar?
-        cur.execute("INSERT INTO cart_items (article_id, cart_id, quantity) VALUES("+ str(result[0]) +", (SELECT cart_id FROM cart WHERE customer_id = "+ str(customer_id) +"), "+ str(addToCart.quantity.data) +");") #HÄMTA ID FÖR CART
-       # cart_id = cur.fetchone() 
+        #Funkar för att vi sätter en unique key som kopplar article_id med cart_id <3
+        cur.execute("INSERT INTO cart_items (article_id, cart_id, quantity) VALUES ("+ 
+                    str(result[0]) +", (SELECT cart_id FROM cart WHERE customer_id = "+ str(customer_id) +"), "
+                    + str(addToCart.quantity.data) +") ON DUPLICATE KEY UPDATE QUANTITY="+ str(addToCart.quantity.data) +";")
+       
         db.connection.commit()
         cur.close()
         #print(cur.fetchone())
-        
-        
-          
-# customer_id
-
-# insert ignore into cart (customer_id) values (1);
-
-# SELECT cart_id FROM cart;
-
-
-# INSERT INTO sprint3.cart_items
-# (article_id, cart_id, quantity)
-# VALUES(2, 9, 1);
-        
+        return redirect(url_for("main.category",category_id=result[3]))
     
-    
+    else:
+        addToCart.quantity.data = 1
 
     return render_template("article.html", artiklar = result,picture=result[1],addToCartForm = addToCart)
 
@@ -92,6 +83,9 @@ def article(article_number):
 @bp.route("/user")
 @login_required
 def user():
+    
+    
+    
     return render_template("user.html")
 
 @bp.route("/user/edit", methods=['GET', 'POST'])
@@ -117,10 +111,44 @@ def edit_user():
     return render_template('user_edit.html', form=form)
 
 
-@bp.route("/user/cart")
+@bp.route("/user/cart", methods=['GET', 'POST'])
+@login_required
 def cart():
+    
+    cur = db.connection.cursor()
+    
+    customer_id = current_user.id
+    
+    cur.execute("SELECT articles.name,cart_items.quantity,articles.price,articles.article_id,cart_items.cart_items_id " +
+                "FROM cart_items inner join articles on articles.article_id=cart_items.article_id "+
+                "WHERE cart_id=(SELECT cart_id FROM cart WHERE customer_id = "+str(customer_id) + "); ") 
+    #a = list()
+    #[a.append(list(item)) for item in cur.fetchall()] #gör om allt till list of lists
+    
+    totalPrice = 0
+    
+    result = cur.fetchall()
+    for item in result:
+        #item.append(CartForm(item[1]))
+        print(item)
+        totalPrice += item[1] * item[2] 
+    
+    
+    db.connection.commit()
+    cur.close()
+    
+    return render_template("user_cart.html", artiklar = result,totalPrice = totalPrice)
 
-    return render_template("user.html", artiklar = artiklar)
 
 
+@bp.route("/user/cart/remove/<int:article_number>", methods=['GET','POST'])
+@login_required
+def remove_item(article_number):
+
+    cur = db.connection.cursor()
+    cur.execute("DELETE FROM cart_items WHERE cart_items_id=" + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
+        
+    db.connection.commit()
+    cur.close()
+    return redirect(url_for('main.cart'))
 

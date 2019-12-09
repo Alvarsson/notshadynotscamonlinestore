@@ -8,7 +8,14 @@ class AddToCartForm(FlaskForm):
     quantity = IntegerField('Quantity', validators=[DataRequired()])
     submit = SubmitField("Add to cart")
     
-    def __init__(self):
-        super(AddToCartForm, self).__init__() 
-        self.quantity.data = 1
+class CartForm(FlaskForm):
+    quantity = IntegerField('Quantity', validators=[DataRequired()])
+    submit = SubmitField("Change")
+    
+    def __init__(self,quantity):
+        super(CartForm, self).__init__() 
+        self.quantity.data = quantity
 
+
+
+    

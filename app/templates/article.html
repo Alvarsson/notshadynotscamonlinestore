@@ -22,7 +22,7 @@
             </table>
         </div>
         <div class="row">
-            <form method="POST" class="form-inline ml-auto" action="/article/5">
+            <form method="POST" class="form-inline ml-auto" action="{{ url_for('main.article',article_number=artiklar[0]) }}">
                 {{ addToCartForm.csrf_token }}
                 <div class="col">
                     {{ addToCartForm.quantity(class="form-control")}}
