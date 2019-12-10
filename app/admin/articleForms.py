@@ -11,7 +11,7 @@ class ArticleForm(FlaskForm):
     price = IntegerField('Price', validators=[DataRequired()])
     url = StringField('URL')
     description = StringField('Description')
-    submitArticle = SubmitField("Add Article")
+    submitArticle = SubmitField()
 
  
     def __init__(self,article_number=None):
@@ -23,9 +23,13 @@ class ArticleForm(FlaskForm):
             categoryArray.append(cat)
 
         self.category.choices = categoryArray
+        self.submitArticle.label.text = "Add article"
 
         if article_number != None and self.name.data == None: #för att stoppa att skriva över form input från user... 
             self.addPlaceholders(article_number)
+            self.submitArticle.label.text = "Edit article"
+
+            
 
 
     ########################################## EDWARD SAY ME, WHY NOT 2 CONSTRUCTORS I LOSE MIND #########################################
@@ -35,7 +39,7 @@ class ArticleForm(FlaskForm):
         #print("om du kommit in i edit specific article delen, så påbörjar en annorlunda articleform")
         cur = db.connection.cursor()
 
-        cur.execute("""SELECT article_id,stock,category_id,articles.name,price,url,text FROM articles
+        cur.execute("""SELECT article_id,stock,articles.category_id,articles.name,price,url,text FROM articles
          left JOIN categories ON articles.category_id=categories.category_id 
          left join description on articles.article_id=description.description_id 
          where article_id=""" + str(article_number) + ";")
