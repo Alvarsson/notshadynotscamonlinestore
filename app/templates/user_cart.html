@@ -1,6 +1,10 @@
 {% extends "public_template.html" %}
 
+
+
 {% block main %}
+
+
 
 <div class="container">
     <h2>Shopping Cart</h2>
@@ -8,7 +12,6 @@
         {% for artikel in artiklar %}
 
         <hr>
-
         <div class="row">
             <hr>
 
@@ -17,11 +20,11 @@
             </div>
 
             <div class="col">
-                {{artikel[1]}}
+                {{artikel[1]}} st
             </div>
 
             <div class="col">
-                {{artikel[2]}} st
+                {{artikel[2]}} kr/st
             </div>
 
             <div class="col">
@@ -35,8 +38,19 @@
         </div>
         {% endfor %}
         <hr>
-        <div>
-            <span>Total</span> : {{totalPrice}} kr
+        <div class="row justify-content-center">
+            <div class="col">
+                <span>Total</span> : {{totalPrice}} kr
+
+            </div>
+            <div class="col">
+
+
+                <a href="{{ url_for('main.cart_to_order') }}"><button class='btn btn-primary'>Lägg
+                        beställning</button></a>
+
+
+            </div>
         </div>
     </div>
 </div>

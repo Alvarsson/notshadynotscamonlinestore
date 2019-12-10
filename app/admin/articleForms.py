@@ -58,7 +58,7 @@ class ArticleForm(FlaskForm):
 
 
 class RemoveArticleForm(FlaskForm):
-    article = IntegerField('Article ID')
+    article = StringField('Article ID')
     submitRemoveArticle = SubmitField("Remove")
 
 

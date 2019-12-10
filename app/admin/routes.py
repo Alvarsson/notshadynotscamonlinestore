@@ -6,6 +6,7 @@ from app.admin import admin_bp as bp
 from app import db
 from app.admin.forms import AddCategoryForm, RemoveCategoryForm, EditCategoryForm
 from app.admin.articleForms import ArticleForm,RemoveArticleForm
+import re
 
 
 artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
@@ -99,10 +100,10 @@ def adminArticles():
         url = str(addArticle.url.data)
         desc = str(addArticle.description.data)
 
-        cur.execute("INSERT INTO articles (name, category, price, stock,url) VALUES ('" + articleName + "','" + chooseCat +
+        cur.execute("INSERT INTO articles (name, category_id, price, stock,url) VALUES ('" + articleName + "','" + chooseCat +
                      "', '" + price+ "' ,  '" + stockAmount + "'   ,'" + url + "');")
         if desc != "":
-            cur.execute("INSERT INTO article_description (text, description_id ) VALUES ('" + desc +
+            cur.execute("INSERT INTO description (text, description_id ) VALUES ('" + desc +
              "', (SELECT article_id FROM articles WHERE name='" + articleName + "'));")
         db.connection.commit()
         cur.close()
@@ -111,8 +112,29 @@ def adminArticles():
 
     if removeArticle.validate_on_submit() and removeArticle.submitRemoveArticle.data:
         articleToRemove = str(removeArticle.article.data)
-        cur.execute("DELETE FROM articles WHERE article_id=" + articleToRemove + ";")
-        print("removed article")
+
+        
+        x = re.search("([0-9]+)-([0-9]+)", articleToRemove)
+        if x:
+            x = re.split("-", articleToRemove)
+            x.sort()
+            for i in range(int(x[0]),int(x[1])+1):
+                
+                cur.execute("DELETE FROM articles WHERE article_id=" + str(i) + ";")
+
+        else:
+            cur.execute("DELETE FROM articles WHERE article_id=" + articleToRemove + ";")
+
+
+        #Split the string at every white-space character:
+
+        #str = "The rain in Spain"
+        
+        # if (x):
+        #     print("YES! We have a match!")
+        # else:
+        #     print("No match")
+
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))

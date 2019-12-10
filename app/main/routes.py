@@ -4,7 +4,7 @@ from app import db
 from app.login.forms import EditUserForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.login.user import User
-from app.main.forms import AddToCartForm, CartForm, CommentForm
+from app.main.forms import AddToCartForm, CartForm, CommentForm, PurchaseCartForm
 
  #Static test input
 artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
@@ -85,7 +85,7 @@ def article(article_number):
         
         #cur = db.connection.cursor()
         customer_id = current_user.id
-        print(addToCart.quantity.data)
+        print(current_user.id)
         
         cur.execute("INSERT IGNORE INTO cart (customer_id) VALUES ("+str(customer_id)+");") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
         
@@ -150,17 +150,19 @@ def cart():
     #a = list()
     #[a.append(list(item)) for item in cur.fetchall()] #gör om allt till list of lists
     
+    #Skapar ny order, lägger in alla cart_items i order_items med rätt värden. Tar bort cart.
+    
     totalPrice = 0
     
     result = cur.fetchall()
     for item in result:
         #item.append(CartForm(item[1]))
-        print(item)
+        
         totalPrice += item[1] * item[2] 
-    
     
     db.connection.commit()
     cur.close()
+
     
     return render_template("user_cart.html", artiklar = result,totalPrice = totalPrice)
 
@@ -169,11 +171,37 @@ def cart():
 @bp.route("/user/cart/remove/<int:article_number>", methods=['GET','POST'])
 @login_required
 def remove_item(article_number):
-
+    print("yoloss remove")
     cur = db.connection.cursor()
     cur.execute("DELETE FROM cart_items WHERE cart_items_id=" + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
         
     db.connection.commit()
     cur.close()
+
     return redirect(url_for('main.cart'))
+
+
+@bp.route("/user/cartToOrder", methods=['GET','POST'])
+@login_required
+def cart_to_order():
+
+    cur = db.connection.cursor()
+    cur.execute("INSERT INTO orders (user_id) VALUES (" + str(current_user.id) + ");")
+    
+    cur.execute("INSERT INTO order_items (order_id, article_id, quantity, price) " +
+        "SELECT LAST_INSERT_ID(), cart_items.article_id, cart_items.quantity, articles.price " +
+        "FROM cart_items LEFT JOIN articles " +
+        "ON cart_items.article_id = articles.article_id " + 
+        "WHERE cart_id = (SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +");")
+                
+    cur.execute("DELETE FROM cart WHERE " +
+        "cart_id = (SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +");")
+    
+    cur.connection.commit()
+    cur.close()
+
+    print("slut")
+    return redirect(url_for('main.cart'))
+    
+
 

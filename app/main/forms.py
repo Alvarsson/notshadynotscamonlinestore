@@ -20,6 +20,10 @@ class CommentForm(FlaskForm):
     comment = TextAreaField('Comment', validators=[DataRequired()])
     submit = SubmitField("Submit comment/rating")
     rating = SelectField('Rating:', choices=[('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'),('5', '5')])
+    
+class PurchaseCartForm(FlaskForm):
+    submit = SubmitField("Commit and Order")
+
 
 
     
