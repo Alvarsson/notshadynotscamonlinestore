@@ -4,8 +4,7 @@ from app import db
 from app.login.forms import EditUserForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.login.user import User
-
-from app.main.forms import AddToCartForm, CartForm
+from app.main.forms import AddToCartForm, CartForm, CommentForm
 
  #Static test input
 artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
@@ -53,12 +52,33 @@ def category(category_id):
 def article(article_number):
     cur = db.connection.cursor()
     
-    cur.execute("SELECT article_id,url,name,category_id,price FROM articles WHERE article_id = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
-
+    cur.execute("SELECT article_id, url, name, category_id, price FROM articles WHERE article_id = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
     result = cur.fetchone() 
-    #print(result)
-    addToCart = AddToCartForm() 
+
+    cur.execute("SELECT comments.comment, users.user_name, comments.timestamp, comments.rating FROM comments INNER JOIN users ON comments.customer_id = users.customer_id WHERE comments.article_id ="+ str(article_number))
     
+    allComments = list()
+    for i in cur.fetchall():
+        allComments.append(i)
+    #print(allComments)
+    addToCart = AddToCartForm() 
+    commentForm = CommentForm()
+
+    if commentForm.validate_on_submit() and commentForm.comment.data:
+        if current_user.is_authenticated != True:
+            return redirect(url_for("login.login"))
+
+        customer_id = current_user.id
+
+        cur.execute("INSERT INTO comments (article_id, rating, comment, timestamp, customer_id) VALUES ("+
+                                         str(article_number)+ 
+                                         ", "+ str(commentForm.rating.data) +
+                                         ", '"+ str(commentForm.comment.data) +
+                                         "', NOW()," + str(customer_id) +
+                                         ");")
+        db.connection.commit()
+        cur.close()
+        return redirect(url_for("main.article",article_number=article_number))
     
     if addToCart.validate_on_submit() and addToCart.quantity.data:
         
@@ -67,7 +87,7 @@ def article(article_number):
         customer_id = current_user.id
         print(addToCart.quantity.data)
         
-        cur.execute("insert ignore into cart (customer_id) values ("+str(customer_id)+");") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
+        cur.execute("INSERT IGNORE INTO cart (customer_id) VALUES ("+str(customer_id)+");") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
         
         #Funkar för att vi sätter en unique key som kopplar article_id med cart_id <3
         cur.execute("INSERT INTO cart_items (article_id, cart_id, quantity) VALUES ("+ 
@@ -82,7 +102,7 @@ def article(article_number):
     else:
         addToCart.quantity.data = 1
 
-    return render_template("article.html", artiklar = result,picture=result[1],addToCartForm = addToCart)
+    return render_template("article.html", artiklar = result,kommentarer=allComments,picture=result[1],addToCartForm = addToCart, commentForm = commentForm)
 
 
 @bp.route("/user")

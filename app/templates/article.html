@@ -27,7 +27,6 @@
                 <div class="col">
                     {{ addToCartForm.quantity(class="form-control")}}
                 </div>
-
                 <div class="col">
                     {{ addToCartForm.submit(class="btn-primary btn")}}
                 </div>
@@ -37,25 +36,42 @@
         </div>
   </div>
  </div>
+ <div class="container mt-4">
+    <form method="POST" class="form-inline mr-auto" action="{{ url_for('main.article', article_number=artiklar[0]) }}">
+        {{ commentForm.csrf_token }}
+        <div class="row">
+            {{ commentForm.comment(class="form-control", cols="40", style="height:100px;", maxlength="300")}}
+        </div>
+        <div class="row ml-4">
+                {{ commentForm.rating(class="form-control") }}
+        </div>
+        <div class="row ml-4" >
+            {{ commentForm.submit(class="btn-primary btn")}}
+        </div>
+        <!--<label for="comment">Leave a comment:</label>
+        <textarea class="form-control" rows="4" id="comment"></textarea>
+        -->
+    </form>
+    </div>
 </div>
 
-<div class="container ">
-    {% for item in artiklar %}
+<div class="container mt-2">
+    {% for item in kommentarer %}
     <div class="row">
         {% if loop.index0 % 2 == 0 %}
         <div class="col-8 bg-light">
         {% else %}
         <div class="col-8 bg-secondary text-white">
         {% endif %}
-            <p>Det här är min kommentar, den här produkten kom aldrig fram. Wonder why.</p>
+            <p>{{ item[0] }}</p>
         </div>
         {% if loop.index0 % 2 == 0 %}
         <div class="col-4 bg-secondary text-white">
         {% else %}
         <div class="col-4 bg-light">
         {% endif %}
-            <p>Skrivet av: AmazingReviewer {{ item }}</p>
-            <p> 5 av 5</p>
+            <p>Skrivet av: {{ item[1] }} vid: {{ item[2] }}</p>
+            <p> Rating: {{ item[3] }} av 5</p>
         </div>
     </div>
     {% endfor %}

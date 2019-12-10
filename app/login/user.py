@@ -88,7 +88,7 @@ class User(UserMixin):
 
     def to_dict(self): #makes dictionary
         return {'user_id': self.id,
-                'first_name': self.first_name,
+                'first_name': self.first_name, 
                 'last_name': self.last_name,
                 'username': self.username,
                 'password': self.password,

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, SubmitField, IntegerField
+from wtforms import StringField, SelectField, PasswordField, SubmitField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired
 
 
@@ -16,6 +16,10 @@ class CartForm(FlaskForm):
         super(CartForm, self).__init__() 
         self.quantity.data = quantity
 
+class CommentForm(FlaskForm):
+    comment = TextAreaField('Comment', validators=[DataRequired()])
+    submit = SubmitField("Submit comment/rating")
+    rating = SelectField('Rating:', choices=[('1', '1'), ('2', '2'), ('3', '3'), ('4', '4'),('5', '5')])
 
 
     
