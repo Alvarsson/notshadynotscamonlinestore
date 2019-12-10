@@ -3,19 +3,7 @@
 
 
 {% block main %}
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-    <script type=text/javascript>
-        $(function() {
-          $('a#test').bind('click', function() {
-            $.getJSON('/user/cartToOrder',
-                function(data) {
-              //do nothing
-            });
-            return false;
-          });
-        });
-</script>
 
 
 <div class="container">
@@ -56,16 +44,15 @@
 
             </div>
             <div class="col">
-            
-                <form>
-                    <a href=# id=test><button class='btn btn-primary'>Lägg beställning</button></a>
-                </form>
-            
+
+
+                <a href="{{ url_for('main.cart_to_order') }}"><button class='btn btn-primary'>Lägg
+                        beställning</button></a>
+
+
             </div>
         </div>
     </div>
 </div>
 
-    {% endblock %}
-    
-    
+{% endblock %}
