@@ -130,6 +130,20 @@ def cart():
     #a = list()
     #[a.append(list(item)) for item in cur.fetchall()] #gör om allt till list of lists
     
+    #Skapar ny order, lägger in alla cart_items i order_items med rätt värden. Tar bort cart.
+    '''cur.execute('''INSERT INTO orders (user_id)
+        VALUES %(user_id)s;
+
+        INSERT INTO order_items (order_id, article_id, quantity, price) 
+        SELECT LAST_INSERT_ID(), cart_items.article_id, cart_items.quantity, articles.price
+        FROM cart_items LEFT JOIN articles
+        ON cart_items.article_id = articles.article_id
+        WHERE cart_id = (SELECT cart_id FROM cart WHERE customer_id = %(user_id)s);
+                
+        DELETE FROM cart WHERE 
+        cart_id = (SELECT cart_id FROM cart WHERE customer_id = %(user_id)s);''',
+        { 'user_id': current_user.user_id})
+    '''
     totalPrice = 0
     
     result = cur.fetchall()
@@ -143,6 +157,10 @@ def cart():
 
     
     return render_template("user_cart.html", artiklar = result,totalPrice = totalPrice)
+
+
+
+
 
 
 
