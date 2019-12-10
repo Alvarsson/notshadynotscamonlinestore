@@ -16,6 +16,9 @@ class CartForm(FlaskForm):
         super(CartForm, self).__init__() 
         self.quantity.data = quantity
 
+class PurchaseCartForm(FlaskForm):
+    submit = SubmitField("Commit and Order")
+
 
 
     

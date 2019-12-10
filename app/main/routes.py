@@ -5,7 +5,7 @@ from app.login.forms import EditUserForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.login.user import User
 
-from app.main.forms import AddToCartForm, CartForm
+from app.main.forms import AddToCartForm, CartForm,PurchaseCartForm
 
  #Static test input
 artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
@@ -65,7 +65,7 @@ def article(article_number):
         
         #cur = db.connection.cursor()
         customer_id = current_user.id
-        print(addToCart.quantity.data)
+        print(current_user.id)
         
         cur.execute("insert ignore into cart (customer_id) values ("+str(customer_id)+");") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
         
@@ -141,6 +141,7 @@ def cart():
     
     db.connection.commit()
     cur.close()
+
     
     return render_template("user_cart.html", artiklar = result,totalPrice = totalPrice)
 
@@ -149,11 +150,25 @@ def cart():
 @bp.route("/user/cart/remove/<int:article_number>", methods=['GET','POST'])
 @login_required
 def remove_item(article_number):
-
+    print("yoloss remove")
     cur = db.connection.cursor()
     cur.execute("DELETE FROM cart_items WHERE cart_items_id=" + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
         
     db.connection.commit()
     cur.close()
+
     return redirect(url_for('main.cart'))
+
+
+@bp.route("/user/cartToOrder", methods=['GET','POST'])
+@login_required
+def cart_to_order():
+    print("yolo")
+    # cur = db.connection.cursor()
+    # cur.execute("DELETE FROM cart_items WHERE cart_items_id=" + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
+        
+    # db.connection.commit()
+    # cur.close()
+    return redirect(url_for('main.home'))
+
 
