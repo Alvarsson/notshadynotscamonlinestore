@@ -138,7 +138,6 @@ def cart():
         print(item)
         totalPrice += item[1] * item[2] 
     
-    
     db.connection.commit()
     cur.close()
 
