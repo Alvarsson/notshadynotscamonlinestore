@@ -132,7 +132,7 @@ def user():
                 FROM order_items LEFT JOIN orders
                 ON order_items.order_id = orders.order_id
                 WHERE orders.user_id = %s
-                GROUP BY order_id;''', (current_user.id, ))
+                GROUP BY order_id ORDER BY order_id DESC;''', (current_user.id, ))
     res = cur.fetchall()
     
     return render_template("user.html", orders = res)
