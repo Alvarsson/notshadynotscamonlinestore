@@ -50,19 +50,18 @@
         <h1>Ordrar</h1>
     </div>
     <ul>
-        {% for item in artiklar %}
+        {% for item in orders %}
         <li class="list-group-item list-group-item-action flex-column align-items-start">
-            <a href="{{ url_for('main.article',article_number=item[0] ) }}">
+            <a href="{{ url_for('main.order',order_id=item[0] ) }}">
                 <div class="row d-flex w-100 ">
                     <div class="col">
-                        <img class="img-fluid mw-100"
-                            src="{{ url_for('static', filename='img/noimage.png') if item[1] == '' else item[1]}}">
+                        <h5>Ordernummer: {{item[0]}}</h5>
                     </div>
                     <div class="col-5">
-                        <h5>{{item[2]}}</h5>
+                        <!--   <h5>{{item[0]}}</h5> -->
                     </div>
                     <div class="col">   
-                        <medium>{{item[3]}} kr</medium>
+                        <medium>{{item[1]}} kr</medium>
                     </div>
 
                 </div>

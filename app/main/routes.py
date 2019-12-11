@@ -13,7 +13,7 @@ testy = ['Username', 'First name', 'Sur name', 'Email', 'Adress', 'Password']
 #kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
 @bp.app_errorhandler(404)
 def invalid_route(e):
-    return render_template("404error.html", title="404"), 404 
+    return render_template("404error.html", title="404"), 404
 
 
 
@@ -99,7 +99,7 @@ def article(article_number):
         customer_id = current_user.id
 
         cur.execute("INSERT INTO comments (article_id, rating, comment, timestamp, customer_id) VALUES ("+
-                                         str(article_number)+ 
+                                         str(article_number)+
                                          ", "+ str(commentForm.rating.data) +
                                          ", '"+ str(commentForm.comment.data) +
                                          "', NOW()," + str(customer_id) +
@@ -107,37 +107,69 @@ def article(article_number):
         db.connection.commit()
         cur.close()
         return redirect(url_for("main.article",article_number=article_number))
+<<<<<<< HEAD
     
     #functionality for adding article to user cart
     if addToCart.validate_on_submit() and addToCart.quantity.data:
         
+=======
+
+    if addToCart.validate_on_submit() and addToCart.quantity.data:
+
+
+        #cur = db.connection.cursor()
+>>>>>>> 8b8e7f868b9ec05c6db99c1d8ecb09f14a66b218
         customer_id = current_user.id
         print(current_user.id)
-        
+
         cur.execute("INSERT IGNORE INTO cart (customer_id) VALUES ("+str(customer_id)+");") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
-        
+
         #Funkar för att vi sätter en unique key som kopplar article_id med cart_id <3
-        cur.execute("INSERT INTO cart_items (article_id, cart_id, quantity) VALUES ("+ 
+        cur.execute("INSERT INTO cart_items (article_id, cart_id, quantity) VALUES ("+
                     str(result[0]) +", (SELECT cart_id FROM cart WHERE customer_id = "+ str(customer_id) +"), "
                     + str(addToCart.quantity.data) +") ON DUPLICATE KEY UPDATE QUANTITY="+ str(addToCart.quantity.data) +";")
-       
+
         db.connection.commit()
         cur.close()
         return redirect(url_for("main.category",category_id=result[3]))
-    
+
     else:
         addToCart.quantity.data = 1
 
     return render_template("article.html", artiklar = result,kommentarer=allComments,picture= is_url_image(result[1]) ,addToCartForm = addToCart, commentForm = commentForm, desc = desc, average = average)
 
+@bp.route("/userdebug")
+def user_debug():
+    return str(current_user)
+
+#man kan nå någon annans order nu...
+@bp.route("/order/<int:order_id>", methods=['GET', 'POST'])
+@login_required
+def order(order_id):
+    cur = db.connection.cursor()
+    cur.execute('''SELECT articles.name,order_items.quantity,order_items.price , order_items.quantity*order_items.price
+                FROM order_items inner join articles on articles.article_id=order_items.article_id 
+                WHERE order_id=%s''', (order_id, ))
+    res = cur.fetchall()           
+
+    cur.execute('''SELECT SUM(quantity*price) from order_items where order_id=%s''', (order_id, ))
+
+    totalPrice = cur.fetchone()[0]
+    
+    return render_template("user_order.html", orders = res,order_id=order_id,totalPrice=totalPrice)
 
 @bp.route("/user")
 @login_required
 def user():
+    cur = db.connection.cursor()
+    cur.execute('''SELECT order_items.order_id, SUM(price*quantity)
+                FROM order_items LEFT JOIN orders
+                ON order_items.order_id = orders.order_id
+                WHERE orders.user_id = %s
+                GROUP BY order_id ORDER BY order_id DESC;''', (current_user.id, ))
+    res = cur.fetchall()
     
-    
-    
-    return render_template("user.html")
+    return render_template("user.html", orders = res)
 
 @bp.route("/user/edit", methods=['GET', 'POST'])
 @login_required
@@ -165,31 +197,31 @@ def edit_user():
 @bp.route("/user/cart", methods=['GET', 'POST'])
 @login_required
 def cart():
-    
+
     cur = db.connection.cursor()
-    
+
     customer_id = current_user.id
-    
+
     cur.execute("SELECT articles.name,cart_items.quantity,articles.price,articles.article_id,cart_items.cart_items_id " +
                 "FROM cart_items inner join articles on articles.article_id=cart_items.article_id "+
-                "WHERE cart_id=(SELECT cart_id FROM cart WHERE customer_id = "+str(customer_id) + "); ") 
+                "WHERE cart_id=(SELECT cart_id FROM cart WHERE customer_id = "+str(customer_id) + "); ")
     #a = list()
     #[a.append(list(item)) for item in cur.fetchall()] #gör om allt till list of lists
-    
+
     #Skapar ny order, lägger in alla cart_items i order_items med rätt värden. Tar bort cart.
-    
+
     totalPrice = 0
-    
+
     result = cur.fetchall()
     for item in result:
         #item.append(CartForm(item[1]))
-        
-        totalPrice += item[1] * item[2] 
-    
+
+        totalPrice += item[1] * item[2]
+
     db.connection.commit()
     cur.close()
 
-    
+
     return render_template("user_cart.html", artiklar = result,totalPrice = totalPrice)
 
 
@@ -200,7 +232,7 @@ def remove_item(article_number):
     print("yoloss remove")
     cur = db.connection.cursor()
     cur.execute("DELETE FROM cart_items WHERE cart_items_id=" + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
-        
+
     db.connection.commit()
     cur.close()
 
@@ -213,21 +245,21 @@ def cart_to_order():
 
     cur = db.connection.cursor()
     cur.execute("INSERT INTO orders (user_id) VALUES (" + str(current_user.id) + ");")
-    
+
     cur.execute("INSERT INTO order_items (order_id, article_id, quantity, price) " +
         "SELECT LAST_INSERT_ID(), cart_items.article_id, cart_items.quantity, articles.price " +
         "FROM cart_items LEFT JOIN articles " +
-        "ON cart_items.article_id = articles.article_id " + 
+        "ON cart_items.article_id = articles.article_id " +
         "WHERE cart_id = (SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +");")
-                
+
     cur.execute("DELETE FROM cart WHERE " +
         "cart_id = (SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +");")
-    
+
     cur.connection.commit()
     cur.close()
 
     print("slut")
-    return redirect(url_for('main.cart'))
-    
+    return redirect(url_for('main.user'))
+
 
 

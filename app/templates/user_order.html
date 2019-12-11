@@ -1,0 +1,46 @@
+{% extends "public_template.html" %}
+
+
+
+{% block main %}
+
+
+
+<div class="container">
+    <h2>Order nr:{{order_id}}</h2>
+    <div class="col">
+        {% for order in orders %}
+
+        <hr>
+        <div class="row">
+            <hr>
+
+            <div class="col">
+                {{order[0]}}
+            </div>
+
+            <div class="col">
+                {{order[1]}} st
+            </div>
+
+            <div class="col">
+                {{order[2]}} kr/st
+            </div>
+
+            <div class="col">
+                {{order[2] * order[1] }} kr
+            </div>
+
+        </div>
+        {% endfor %}
+        <hr>
+        <div class="row justify-content-center">
+            <div class="col">
+                <span>Total</span> : {{totalPrice}} kr
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
