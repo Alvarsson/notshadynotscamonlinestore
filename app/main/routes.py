@@ -113,10 +113,12 @@ def user_debug():
 @login_required
 def user():
     cur = db.connection.cursor()
-    cur.execute('''SELECT orders.order_id, SUM(price*quantity) FROM orders LEFT JOIN order_items ON orders.order_id = order_items.order_id WHERE orders.user_id = %s''', (current_user.id, ))
+    cur.execute('''SELECT order_items.order_id, SUM(price*quantity)
+                FROM order_items LEFT JOIN orders
+                ON order_items.order_id = orders.order_id
+                WHERE orders.user_id = %s
+                GROUP BY order_id;''', (current_user.id, ))
     res = cur.fetchall()
-    print("Här kommer resultatet")
-    print(res)
     return render_template("user.html", orders = res)
 
 @bp.route("/user/edit", methods=['GET', 'POST'])
