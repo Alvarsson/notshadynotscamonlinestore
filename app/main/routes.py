@@ -108,6 +108,21 @@ def article(article_number):
 def user_debug():
     return str(current_user)
 
+#man kan nå någon annans order nu...
+@bp.route("/order/<int:order_id>", methods=['GET', 'POST'])
+@login_required
+def order(order_id):
+    cur = db.connection.cursor()
+    cur.execute('''SELECT articles.name,order_items.quantity,order_items.price , order_items.quantity*order_items.price
+                FROM order_items inner join articles on articles.article_id=order_items.article_id 
+                WHERE order_id=%s''', (order_id, ))
+    res = cur.fetchall()           
+
+    cur.execute('''SELECT SUM(quantity*price) from order_items where order_id=%s''', (order_id, ))
+
+    totalPrice = cur.fetchone()[0]
+    
+    return render_template("user_order.html", orders = res,order_id=order_id,totalPrice=totalPrice)
 
 @bp.route("/user")
 @login_required
@@ -119,6 +134,7 @@ def user():
                 WHERE orders.user_id = %s
                 GROUP BY order_id;''', (current_user.id, ))
     res = cur.fetchall()
+    
     return render_template("user.html", orders = res)
 
 @bp.route("/user/edit", methods=['GET', 'POST'])

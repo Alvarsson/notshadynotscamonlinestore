@@ -52,7 +52,7 @@
     <ul>
         {% for item in orders %}
         <li class="list-group-item list-group-item-action flex-column align-items-start">
-            <a href="{{ url_for('main.article',article_number=item[0] ) }}">
+            <a href="{{ url_for('main.order',order_id=item[0] ) }}">
                 <div class="row d-flex w-100 ">
                     <div class="col">
                         <h5>Ordernummer: {{item[0]}}</h5>
