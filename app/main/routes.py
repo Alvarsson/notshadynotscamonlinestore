@@ -207,7 +207,7 @@ def cart_to_order():
     cur.close()
 
     print("slut")
-    return redirect(url_for('main.cart'))
+    return redirect(url_for('main.user'))
 
 
 
