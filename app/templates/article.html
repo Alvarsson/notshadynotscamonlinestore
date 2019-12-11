@@ -5,21 +5,27 @@
 <div class="container">
  <div class="row">
   <div class="col">
-	  <img class="img-fluid mw-100" src="{{ url_for('static', filename='img/noimage.png')  if picture == '' else picture}}">
-   <h2>This is the name of the article</h2>
-  </div>
+	  <img class="img-fluid mw-100" src="{{ picture }}" width="250" height="250">
+   <h2>{{ artiklar[2] }}</h2>
+</div>
   <div class="col">
-      <div class="row">
-           <table class="table table-striped">
-              <tbody>
-              {% for item in artiklar %}
-                <tr>
-                  <th scope="row">{{ item }}</th>
-                  <td>{{ item }}</td>
-                </tr>
-              {% endfor %}
-              </tbody>
-            </table>
+        <div class="row">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th>Artikelnamn: </th>
+                        <td>{{ artiklar[2] }}</td>
+                    </tr>
+                    <tr>
+                        <th>I lager: </th>
+                        <td>{{ artiklar[5] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Pris: </th>
+                        <td>{{ artiklar[4] }}</td>
+                    </tr>
+                </tbody>
+                </table>
         </div>
         <div class="row">
             <form method="POST" class="form-inline ml-auto" action="{{ url_for('main.article',article_number=artiklar[0]) }}">
@@ -35,6 +41,19 @@
             </form>
         </div>
   </div>
+ </div>
+ <div class="container mt-4">
+    <div class="row">
+        <div class="col bg-light">
+        {% for item in desc %}
+        {{ item[0] }}
+        {% endfor %}
+        </div>
+        <div class="col bg-secondary text-white ml-4">
+           <p>Genomsnittligt betyg av artikel: {{average}}</p>
+        </div>
+    </div>
+
  </div>
  <div class="container mt-4">
     <form method="POST" class="form-inline mr-auto" action="{{ url_for('main.article', article_number=artiklar[0]) }}">
@@ -70,7 +89,8 @@
         {% else %}
         <div class="col-4 bg-light">
         {% endif %}
-            <p>Skrivet av: {{ item[1] }} vid: {{ item[2] }}</p>
+            <p>Skrivet av: {{ item[1] }}</p>
+            <p>Vid: {{ item[2] }}</p>
             <p> Rating: {{ item[3] }} av 5</p>
         </div>
     </div>

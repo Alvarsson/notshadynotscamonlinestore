@@ -62,7 +62,7 @@ def adminEditArticle(article_number):
         newDescription = str(editArticle.description.data)
         if newDescription != "":
             #upsert, så infoga ny rad om ingen finns, annars uppdatera googla det
-            cur.execute("INSERT INTO article_description (description_id,text) VALUES ( " + str(article_number) + ",'" + newDescription+ "') ON DUPLICATE KEY UPDATE text ='" + newDescription + "';")
+            cur.execute("INSERT INTO description (description_id,text) VALUES ( " + str(article_number) + ",'" + newDescription+ "') ON DUPLICATE KEY UPDATE text ='" + newDescription + "';")
             print("Uppdaterar eller infogar nya data i description tabellen")
 
         db.connection.commit()

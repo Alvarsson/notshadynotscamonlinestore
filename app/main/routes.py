@@ -5,13 +5,12 @@ from app.login.forms import EditUserForm
 from flask_login import login_user, logout_user, current_user, login_required
 from app.login.user import User
 from app.main.forms import AddToCartForm, CartForm, CommentForm, PurchaseCartForm
-
+import requests
  #Static test input
 artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
 #artiklar = [["edward",'Username:'],["albin", 'First name:'], ["axel", 'Sur name:'], ["blabla", 'Email:'], ["hejhej", 'Adress:']]
 testy = ['Username', 'First name', 'Sur name', 'Email', 'Adress', 'Password']
 #kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
-
 @bp.app_errorhandler(404)
 def invalid_route(e):
     return render_template("404error.html", title="404"), 404 
@@ -40,8 +39,6 @@ def category(category_id):
     images = list()
 
     for i in cur.fetchall():
-
-        #i[1]=url_for('static', filename='img/user.svg')  if i[1] == '' else i[1]
         result.append(i)
 
 
@@ -50,20 +47,51 @@ def category(category_id):
 
 @bp.route("/article/<int:article_number>", methods=['GET', 'POST'])
 def article(article_number):
+    def is_url_image(image_url):
+        image_formats = ("image/png", "image/jpeg", "image/jpg")
+        try:
+            r = requests.head(image_url)
+            if r.headers["content-type"] in image_formats:
+                return image_url
+        except:
+            return url_for('static', filename='img/noimage.png')
+        
+        return url_for('static', filename='img/noimage.png')
+    
     cur = db.connection.cursor()
     
-    cur.execute("SELECT article_id, url, name, category_id, price FROM articles WHERE article_id = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
+    #get data from artikel table
+    cur.execute("SELECT article_id, url, name, category_id, price, stock FROM articles WHERE article_id = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
     result = cur.fetchone() 
-
-    cur.execute("SELECT comments.comment, users.user_name, comments.timestamp, comments.rating FROM comments INNER JOIN users ON comments.customer_id = users.customer_id WHERE comments.article_id ="+ str(article_number))
     
+    #get data from comment table
+    cur.execute("SELECT comments.comment, users.user_name, comments.timestamp, comments.rating FROM comments INNER JOIN users ON comments.customer_id = users.customer_id WHERE comments.article_id ="+ str(article_number))
     allComments = list()
     for i in cur.fetchall():
         allComments.append(i)
-    #print(allComments)
+
+    #calc average rating
+    average = 0
+    loop = 0
+    for i in allComments:
+        average = average + i[3]
+        loop += 1
+    try:
+        average = average/loop
+    except:
+        average = 0
+
+      
+    #get data from description table
+    cur.execute("""SELECT text FROM `description` WHERE description_id = 
+                %s""", (article_number,))
+
+    desc = cur.fetchall()
+    
     addToCart = AddToCartForm() 
     commentForm = CommentForm()
-
+    
+    #Functionality for user adding comment on article
     if commentForm.validate_on_submit() and commentForm.comment.data:
         if current_user.is_authenticated != True:
             return redirect(url_for("login.login"))
@@ -80,10 +108,9 @@ def article(article_number):
         cur.close()
         return redirect(url_for("main.article",article_number=article_number))
     
+    #functionality for adding article to user cart
     if addToCart.validate_on_submit() and addToCart.quantity.data:
         
-        
-        #cur = db.connection.cursor()
         customer_id = current_user.id
         print(current_user.id)
         
@@ -96,13 +123,12 @@ def article(article_number):
        
         db.connection.commit()
         cur.close()
-        #print(cur.fetchone())
         return redirect(url_for("main.category",category_id=result[3]))
     
     else:
         addToCart.quantity.data = 1
 
-    return render_template("article.html", artiklar = result,kommentarer=allComments,picture=result[1],addToCartForm = addToCart, commentForm = commentForm)
+    return render_template("article.html", artiklar = result,kommentarer=allComments,picture= is_url_image(result[1]) ,addToCartForm = addToCart, commentForm = commentForm, desc = desc, average = average)
 
 
 @bp.route("/user")
