@@ -107,18 +107,10 @@ def article(article_number):
         db.connection.commit()
         cur.close()
         return redirect(url_for("main.article",article_number=article_number))
-<<<<<<< HEAD
     
     #functionality for adding article to user cart
     if addToCart.validate_on_submit() and addToCart.quantity.data:
         
-=======
-
-    if addToCart.validate_on_submit() and addToCart.quantity.data:
-
-
-        #cur = db.connection.cursor()
->>>>>>> 8b8e7f868b9ec05c6db99c1d8ecb09f14a66b218
         customer_id = current_user.id
         print(current_user.id)
 
