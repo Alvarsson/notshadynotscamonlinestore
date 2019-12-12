@@ -69,6 +69,7 @@ def article(article_number):
     allComments = list()
     for i in cur.fetchall():
         allComments.append(i)
+    allComments.reverse()
 
     #calc average rating
     average = 0
@@ -127,7 +128,6 @@ def article(article_number):
 
     else:
         addToCart.quantity.data = 1
-
     return render_template("article.html", artiklar = result,kommentarer=allComments,picture= is_url_image(result[1]) ,addToCartForm = addToCart, commentForm = commentForm, desc = desc, average = average)
 
 @bp.route("/userdebug")
