@@ -6,6 +6,11 @@ from flask_login import login_user, logout_user, current_user, login_required
 from app.login.user import User
 from app.main.forms import AddToCartForm, CartForm, CommentForm, PurchaseCartForm
 import requests
+from app.main.utils import *
+
+
+
+
  #Static test input
 artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
 #artiklar = [["edward",'Username:'],["albin", 'First name:'], ["axel", 'Sur name:'], ["blabla", 'Email:'], ["hejhej", 'Adress:']]
@@ -39,7 +44,11 @@ def category(category_id):
     images = list()
 
     for i in cur.fetchall():
-        result.append(i)
+        article_information = list(i)
+        article_information[1] = is_url_image(article_information[1]) # Validates and sets default urls for articles.
+
+        result.append(article_information)
+    print(result)
 
 
     return render_template("kategori.html", artiklar = result,title=result[0][4],images = images)
@@ -47,16 +56,7 @@ def category(category_id):
 
 @bp.route("/article/<int:article_number>", methods=['GET', 'POST'])
 def article(article_number):
-    def is_url_image(image_url):
-        image_formats = ("image/png", "image/jpeg", "image/jpg")
-        try:
-            r = requests.head(image_url)
-            if r.headers["content-type"] in image_formats:
-                return image_url
-        except:
-            return url_for('static', filename='img/noimage.png')
-        
-        return url_for('static', filename='img/noimage.png')
+    
     
     cur = db.connection.cursor()
     
@@ -110,10 +110,15 @@ def article(article_number):
         return redirect(url_for("main.article",article_number=article_number))
     
     #functionality for adding article to user cart
-    if addToCart.validate_on_submit() and addToCart.quantity.data:
-        
+    if addToCart.validate_on_submit() and addToCart.quantity.data>0:
+
+        if addToCart.quantity.data > result[5]:
+            flash('You cant order that many stuffs','danger')
+            return render_template("article.html", artiklar = result,kommentarer=allComments,picture=is_url_image(result[1]) ,addToCartForm = addToCart, commentForm = commentForm, desc = desc, average = average)
+
         customer_id = current_user.id
         print(current_user.id)
+        
 
         cur.execute("INSERT IGNORE INTO cart (customer_id) VALUES ("+str(customer_id)+");") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
 
@@ -124,11 +129,13 @@ def article(article_number):
 
         db.connection.commit()
         cur.close()
+        flash('You now have ' + str(addToCart.quantity.data) + ' ' + str(result[2]) + ' in your shopping cart.','success')
+
         return redirect(url_for("main.category",category_id=result[3]))
 
     else:
         addToCart.quantity.data = 1
-    return render_template("article.html", artiklar = result,kommentarer=allComments,picture= is_url_image(result[1]) ,addToCartForm = addToCart, commentForm = commentForm, desc = desc, average = average)
+    return render_template("article.html", artiklar = result,kommentarer=allComments,picture=is_url_image(result[1]) ,addToCartForm = addToCart, commentForm = commentForm, desc = desc, average = average)
 
 @bp.route("/userdebug")
 def user_debug():

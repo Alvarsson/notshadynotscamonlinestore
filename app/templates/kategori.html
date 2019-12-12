@@ -13,7 +13,7 @@
                 <div class="row d-flex w-100 ">
                     <div class="col">
                         <img class="img-fluid mw-100"
-                            src="{{ url_for('static', filename='img/noimage.png') if item[1] == '' else item[1]}}">
+                             src="{{item[1]}}">  
                     </div>
                     <div class="col-5">
                         <h5>{{item[2]}}</h5>
@@ -31,3 +31,5 @@
 </div>
 
 {% endblock %}
+
+<!--url_for('static', filename='img/noimage.png') if item[1] == '' else item[1] -->
