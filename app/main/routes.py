@@ -31,7 +31,6 @@ def home():
     for i in cur.fetchall():
         category = (int(i[0]),i[1])
         categories.append(category)
-    print(categories)
     return render_template("index.html", ArrayMedTräd = categories)
 
 
@@ -48,8 +47,6 @@ def category(category_id):
         article_information[1] = is_url_image(article_information[1]) # Validates and sets default urls for articles.
 
         result.append(article_information)
-    print(result)
-
 
     return render_template("kategori.html", artiklar = result,title=result[0][4],images = images)
 
@@ -117,9 +114,7 @@ def article(article_number):
             return render_template("article.html", artiklar = result,kommentarer=allComments,picture=is_url_image(result[1]) ,addToCartForm = addToCart, commentForm = commentForm, desc = desc, average = average)
 
         customer_id = current_user.id
-        print(current_user.id)
         
-
         cur.execute("INSERT IGNORE INTO cart (customer_id) VALUES ("+str(customer_id)+");") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
 
         #Funkar för att vi sätter en unique key som kopplar article_id med cart_id <3
@@ -233,7 +228,6 @@ def cart():
 @bp.route("/user/cart/remove/<int:article_number>", methods=['GET','POST'])
 @login_required
 def remove_item(article_number):
-    print("yoloss remove")
     cur = db.connection.cursor()
     cur.execute("DELETE FROM cart_items WHERE cart_items_id=" + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
 
@@ -256,13 +250,15 @@ def cart_to_order():
         "ON cart_items.article_id = articles.article_id " +
         "WHERE cart_id = (SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +");")
 
+    cur.execute("SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +";")
+    usrCartID = cur.fetchone()
+    
     cur.execute("DELETE FROM cart WHERE " +
-        "cart_id = (SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +");")
+        "cart_id ="+ str(usrCartID[0]) +";")
 
     cur.connection.commit()
     cur.close()
 
-    print("slut")
     return redirect(url_for('main.user'))
 
 
