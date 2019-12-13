@@ -146,14 +146,19 @@ def user_debug():
 @login_required
 def order(order_id):
     cur = db.connection.cursor()
-    cur.execute('''SELECT articles.name,order_items.quantity,order_items.price , order_items.quantity*order_items.price
+
+    cur.execute('''SELECT articles.name,order_items.quantity,order_items.price,order_items.quantity*order_items.price
                 FROM order_items inner join articles on articles.article_id=order_items.article_id 
-                WHERE order_id=%s''', (order_id, ))
+                inner join orders on orders.order_id=order_items.order_id
+                WHERE orders.order_id=%s and orders.user_id=%s;''', (order_id,current_user.id, ))
+
     res = cur.fetchall()           
 
-    cur.execute('''SELECT SUM(quantity*price) from order_items where order_id=%s''', (order_id, ))
+    cur.execute('''SELECT SUM(order_items.quantity*order_items.price) from order_items inner join orders on orders.order_id=order_items.order_id where order_items.order_id=%s and orders.user_id=%s''', (order_id,current_user.id, ))
 
-    totalPrice = cur.fetchone()[0]
+    output = cur.fetchone()[0]
+
+    totalPrice = 0 if output==None else output
     
     return render_template("user_order.html", orders = res,order_id=order_id,totalPrice=totalPrice)
 
