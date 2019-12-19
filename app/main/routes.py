@@ -1,4 +1,4 @@
-from flask import render_template, url_for, flash, redirect, request, Flask, abort
+from flask import render_template, url_for, flash, redirect, request, Flask, abort, jsonify
 from app.main import main_bp as bp
 from app import db
 from app.login.forms import EditUserForm
@@ -12,6 +12,18 @@ from app.main.utils import *
 def invalid_route(e):
     return render_template("404error.html", title="404"), 404
 
+
+@bp.route("/search", methods=['POST'])
+def search():
+    if request.method == "POST" and request.form['search_string'] != '':
+        req = request.form['search_string']
+        cur = db.connection.cursor()
+        cur.execute('''SELECT article_id, name FROM articles
+                WHERE MATCH(name) AGAINST(%s IN BOOLEAN MODE)''', (req+'*',))
+        res = cur.fetchall()
+        print(res)
+        return jsonify(data=res)
+    return jsonify(data=[])
 
 @bp.route("/")
 def home():
@@ -49,7 +61,6 @@ def category(category_id):
 @bp.route("/article/<int:article_number>", methods=['GET', 'POST'])
 def article(article_number):
     cur = db.connection.cursor()
-    
     #get data from artikel table
     cur.execute('''SELECT article_id, url, name, category_id, price, stock
                 FROM articles WHERE article_id = %s''', (article_number,))
@@ -80,16 +91,16 @@ def article(article_number):
     except:
         average = 0
 
-      
+
     #get data from description table
-    cur.execute("""SELECT text FROM `description` WHERE description_id = 
+    cur.execute("""SELECT text FROM `description` WHERE description_id =
                 %s""", (article_number,))
 
     desc = cur.fetchall()
-    
-    addToCart = AddToCartForm() 
+
+    addToCart = AddToCartForm()
     commentForm = CommentForm()
-    
+
     #Functionality for user adding comment on article
     if commentForm.validate_on_submit() and commentForm.comment.data:
         if current_user.is_authenticated != True:
@@ -105,7 +116,7 @@ def article(article_number):
         db.connection.commit()
         cur.close()
         return redirect(url_for("main.article",article_number=article_number))
-    
+
     #functionality for adding article to user cart
     if addToCart.validate_on_submit() and addToCart.quantity.data>0:
 
@@ -119,7 +130,6 @@ def article(article_number):
                     average = average)
 
         customer_id = current_user.id
-        
         cur.execute("INSERT IGNORE INTO cart (customer_id) VALUES (%s)",(customer_id,)) # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
 
         #Funkar för att vi sätter en unique key som kopplar article_id med cart_id <3
@@ -149,11 +159,11 @@ def order(order_id):
     cur = db.connection.cursor()
 
     cur.execute('''SELECT articles.name,order_items.quantity,order_items.price,order_items.quantity*order_items.price
-                FROM order_items inner join articles on articles.article_id=order_items.article_id 
+                FROM order_items inner join articles on articles.article_id=order_items.article_id
                 inner join orders on orders.order_id=order_items.order_id
                 WHERE orders.order_id=%s and orders.user_id=%s;''', (order_id,current_user.id, ))
 
-    res = cur.fetchall()           
+    res = cur.fetchall()
 
     cur.execute('''SELECT SUM(order_items.quantity*order_items.price) FROM
             order_items inner join orders ON orders.order_id = order_items.order_id
@@ -162,7 +172,7 @@ def order(order_id):
     output = cur.fetchone()[0]
 
     totalPrice = 0 if output==None else output
-    
+
     return render_template("user_order.html", orders = res,order_id=order_id,totalPrice=totalPrice)
 
 @bp.route("/user")
@@ -175,7 +185,7 @@ def user():
                 WHERE orders.user_id = %s
                 GROUP BY order_id ORDER BY order_id DESC;''', (current_user.id, ))
     res = cur.fetchall()
-    
+
     return render_template("user.html", orders = res)
 
 @bp.route("/user/edit", methods=['GET', 'POST'])
@@ -238,7 +248,7 @@ def cart():
 @login_required
 def remove_item(article_number):
     cur = db.connection.cursor()
-    cur.execute("DELETE FROM cart_items WHERE cart_items_id= %s", (article_number,)) # Can't wait for that sweet, sweet SQL Injection right here.
+    cur.execute("DELETE FROM cart_items WHERE cart_items_id= %s", (article_number,)) 
     db.connection.commit()
     cur.close()
     return redirect(url_for('main.cart'))
@@ -251,11 +261,6 @@ def cart_to_order():
     cur = db.connection.cursor()
     cur.execute("INSERT INTO orders (user_id) VALUES (%s)",(current_user.id,))
 
-    #cur.execute("INSERT INTO order_items (order_id, article_id, quantity, price) " +
-    #    "SELECT LAST_INSERT_ID(), cart_items.article_id, cart_items.quantity, articles.price " +
-    #    "FROM cart_items LEFT JOIN articles " +
-    #    "ON cart_items.article_id = articles.article_id " +
-    #    "WHERE cart_id = (SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +");")
     cur.execute('''INSERT INTO order_items (order_id, article_id, quantity, price)
             SELECT LAST_INSERT_ID(),
             cart_items.article_id,
@@ -268,7 +273,6 @@ def cart_to_order():
 
     cur.execute("SELECT cart_id FROM cart WHERE customer_id = %s", (current_user.id,))
     usrCartID = cur.fetchone()
-    
     cur.execute("DELETE FROM cart WHERE cart_id = %s", (usrCartID[0],))
 
     cur.connection.commit()

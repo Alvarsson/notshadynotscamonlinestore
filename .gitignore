@@ -1,7 +1,5 @@
 # Så att alla kan ha olika configs
 config.py
-
-#vim
 .vim/
 
 # Created by https://www.gitignore.io/api/flask,python,database
