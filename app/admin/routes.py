@@ -23,12 +23,6 @@ def admin_required(func):
         return func(*args, **kwargs)
     return decorated_view
 
-#Helperfunktion -- Skönt för att kunna debugga -- Ta bort i när vi går live
-@bp.route("/userinfo")
-def user_info():
-    if current_user.is_authenticated:
-        return str(current_user)
-    return "Not logged in"
 
 @bp.route("/admin")
 @admin_required
@@ -47,29 +41,38 @@ def adminEditArticle(article_number):
         cur = db.connection.cursor()
         print(editArticle.name.data)
 
-        #editID = str(editArticle.article_number) tycker inte det är en bra ide att låta folk göra detta. exempel hoppa till 100 när count är 23 osv
-        newName = str(editArticle.name.data)
-        newStock = str(editArticle.stock.data)
-        newPrice = str(editArticle.price.data)
-        newCategory = str(editArticle.category.data)
-        newPicture = str(editArticle.url.data)
-        ###########################glöm inte kategori. problem med att nuvarande inte visas när man skriver .data delen...
-        cur.execute("UPDATE articles SET name= " + "'" + newName + "'" +", category_id= " + "'" + newCategory + "'" +", stock=" +  newStock + ", price=" + newPrice + ",url='" + newPicture  +  "' WHERE article_id= " + str(article_number) +";")
-        #cur.execute("UPDATE articles SET article_name= " + "'" + newName + "' WHERE article_number= " + str(article_number) +";")
+        cur.execute('''UPDATE articles SET
+                    name = %s,
+                    category_id = %s,
+                    stock = %s,
+                    price = %s,
+                    url = %s
+                    WHERE article_id = %s;''',
+                    (editArticle.name.data,
+                    int(editArticle.category.data),
+                    int(editArticle.stock.data),
+                    int(editArticle.price.data),
+                    editArticle.url.data,
+                    int(article_number)))
 
-        #cur.execute("""UPDATE articles SET article_name = "TallTall", stock_quantity= 123, price= 124, picture_url= "texas.com"  WHERE article_number=2;""")
-
-        newDescription = str(editArticle.description.data)
-        if newDescription != "":
-            #upsert, så infoga ny rad om ingen finns, annars uppdatera googla det
-            cur.execute("INSERT INTO description (description_id,text) VALUES ( " + str(article_number) + ",'" + newDescription+ "') ON DUPLICATE KEY UPDATE text ='" + newDescription + "';")
-            print("Uppdaterar eller infogar nya data i description tabellen")
+        if editArticle.description.data != "":
+            cur.execute('''INSERT INTO description
+                        (description_id, text)
+                        VALUES
+                        (%s, %s)
+                        ON DUPLICATE KEY UPDATE
+                        text = %s''',
+                        (article_number,
+                            editArticle.description.data,
+                            editArticle.description.data))
 
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))
 
-    return render_template("admin/editArticle.html",editArticleForm = editArticle, articleNumber = article_number)
+    return render_template("admin/editArticle.html",
+            editArticleForm = editArticle,
+            articleNumber = article_number)
 
 
 
@@ -80,7 +83,13 @@ def adminArticles():
     cur = db.connection.cursor()
 
     #Article list in adminview
-    cur.execute("SELECT article_id,stock,categories.name,articles.name,price FROM articles INNER JOIN categories ON articles.category_id=categories.category_id;")
+    cur.execute('''SELECT article_id,
+                            stock,
+                            categories.name,
+                            articles.name,
+                            price
+                FROM articles INNER JOIN categories ON 
+                articles.category_id = categories.category_id''')
     articlesArray = []
     for article in cur.fetchall():
         articlesArray.append(article)
@@ -90,21 +99,24 @@ def adminArticles():
 
 
     if addArticle.validate_on_submit() and addArticle.submitArticle.data:
-        #print(str(addArticle.category.data))
-        print("Adding article")
-        #det här kan ju såklart tas bort, men sql queriet blir något lättare att läsa och pilla i.
-        chooseCat = str(addArticle.category.data)
-        articleName = str(addArticle.name.data)
-        stockAmount = str(addArticle.stock.data)
-        price = str(addArticle.price.data)
-        url = str(addArticle.url.data)
-        desc = str(addArticle.description.data)
+        cur.execute('''INSERT INTO articles
+                    (name, category_id, price, stock, url)
+                    VALUES
+                    (%s, %s, %s, %s, %s)''',
+                    (addArticle.name.data,
+                        addArticle.category.data,
+                        addArticle.price.data,
+                        addArticle.stock.data,
+                        addArticle.url.data))
 
-        cur.execute("INSERT INTO articles (name, category_id, price, stock,url) VALUES ('" + articleName + "','" + chooseCat +
-                     "', '" + price+ "' ,  '" + stockAmount + "'   ,'" + url + "');")
-        if desc != "":
-            cur.execute("INSERT INTO description (text, description_id ) VALUES ('" + desc +
-             "', (SELECT article_id FROM articles WHERE name='" + articleName + "'));")
+        if addArticle.description.data != "":
+            cur.execute('''INSERT INTO description
+                        (text, description_id)
+                        VALUES
+                        (%s, (SELECT article_id FROM articles
+                                WHERE name = %s))''',
+                        (addArticle.description.data,
+                            addArticle.name.data))
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))
@@ -119,11 +131,9 @@ def adminArticles():
             x = re.split("-", articleToRemove)
             x.sort()
             for i in range(int(x[0]),int(x[1])+1):
-                
-                cur.execute("DELETE FROM articles WHERE article_id=" + str(i) + ";")
-
+                cur.execute("DELETE FROM articles WHERE article_id = %s",(i,))
         else:
-            cur.execute("DELETE FROM articles WHERE article_id=" + articleToRemove + ";")
+            cur.execute("DELETE FROM articles WHERE article_id= %s", (articleToRemove,))
 
 
         #Split the string at every white-space character:
@@ -138,15 +148,9 @@ def adminArticles():
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))
-
-    # elif request.form['submit'] == 'remove':
-    #     removeArticle = request.form['removefield']
-    #     cur.execute("DELETE FROM articles WHERE article_number=" + removeArticle + ";")
-    #     db.connection.commit()
-    #     cur.close()
-    #     return redirect(url_for('admin.adminArticles'))
-
-    return render_template("admin/articlesv2.html", addArticleForm = addArticle, articles=articlesArray,removeArticleForm=removeArticle)
+    return render_template("admin/articlesv2.html",
+            addArticleForm = addArticle,
+            articles=articlesArray,removeArticleForm=removeArticle)
 
 @bp.route("/admin/categories", methods=['POST', 'GET'])
 @admin_required
@@ -164,34 +168,33 @@ def adminCategories():
     editCategory = EditCategoryForm()
 
     if addCategory.validate_on_submit() and addCategory.submitAdd.data:
-        newCategory = addCategory.name.data
-        newCategory = "('" + str(newCategory) + "')"
-        cur.execute("INSERT INTO categories (name) VALUES" + newCategory + ";")
+        #newCategory = addCategory.name.data
+        #newCategory = "('" + str(newCategory) + "')"
+        cur.execute("INSERT INTO categories (name) VALUES (%s)", (addCategory.name.data,))
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminCategories'))
 
-
     if removeCategory.validate_on_submit() and removeCategory.submitRemove.data:
         print("remoive")
-        deleteCat = removeCategory.category_id.data
-        cur.execute("DELETE FROM categories WHERE category_id=" + str(deleteCat))
+        cur.execute("DELETE FROM categories WHERE category_id= %s", (removeCategory.category_id.data,))
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminCategories'))
 
     if editCategory.validate_on_submit() and editCategory.submitEdit.data:
-        catID = str(editCategory.category_id.data)
-        newName = str(editCategory.new_name.data)
-
-        cur.execute("UPDATE categories SET name ='" + newName + "' WHERE category_id = " + catID +";")
+        cur.execute('''UPDATE categories SET name = %s
+                        WHERE category_id = %s''',
+                        (editCategory.new_name.data,
+                         editCategory.category_id.data))
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminCategories'))
-
-
-    return render_template("admin/categoriesv2.html", categories=categoryArray, addCategoryForm=addCategory, removeCategoryForm=removeCategory,
-     editCategoryForm=editCategory)
+    return render_template("admin/categoriesv2.html",
+            categories = categoryArray,
+            addCategoryForm = addCategory,
+            removeCategoryForm = removeCategory,
+            editCategoryForm = editCategory)
 
 
 @bp.route("/admin/users", methods=['POST', 'GET'])
@@ -207,69 +210,9 @@ def adminUsers():
     if request.method == 'POST':
         if request.form['submit'] == 'removeuser':
             userID = request.form['userfield']
-            cur.execute("DELETE FROM users WHERE customer_id=" + userID + ";")
+            cur.execute("DELETE FROM users WHERE customer_id= %s", (userID,))
             db.connection.commit()
             cur.close()
             return redirect(url_for('admin.adminUsers'))
     return render_template("admin/users.html", users=userArray)
 
-
-# @bp.route("/admin/articles", methods=['POST', 'GET'])
-# def adminArticles():
-#     cur = db.connection.cursor()
-#     cur.execute("SELECT category_name, category_id FROM categories")
-#     categoryArray = []
-#     for cat in cur.fetchall():
-#         categoryArray.append(cat)
-
-#     cur.execute(
-#         "SELECT article_number, article_name, stock_quantity, price FROM articles")
-#     articlesArray = []
-#     for art in cur.fetchall():
-#         articlesArray.append(art)
-
-#     if request.method == 'POST':
-#         # Submit för att lägga till artiklar
-#         if request.form['submit'] == 'addarticle':
-#             chooseCat = "('" + request.form['chooseCategory'] + "')"
-#             articleName = "('" + request.form['article'] + "')"
-#             stockAmount = request.form['stock']
-#             price = request.form['price']
-#             url = "('" + request.form['url'] + "')"
-#             desc = request.form['description']
-
-#             cur.execute("INSERT INTO articles (article_name, category, price, stock_quantity, picture_url) VALUES (" + articleName +
-#                         ",(SELECT category_id FROM categories WHERE category_name=" + chooseCat + ")," + price + "," + stockAmount + "," + url + ");")
-#             if desc != "":
-#                 desc = "('" + request.form['description'] + "')"
-#                 cur.execute("INSERT INTO article_description (description, description_number ) VALUES (" +
-#                             desc + ", (SELECT article_number FROM articles WHERE article_name=" + articleName + "));")
-#             db.connection.commit()
-#             cur.close()
-#             return redirect(url_for('admin.adminArticles'))
-#         # Ta bort artikel
-#         elif request.form['submit'] == 'remove':
-#             removeArticle = request.form['removefield']
-#             cur.execute(
-#                 "DELETE FROM articles WHERE article_number=" + removeArticle + ";")
-#             db.connection.commit()
-#             cur.close()
-#             return redirect(url_for('admin.adminArticles'))
-#         # Ändra artikelinformation
-#         elif request.form['submit'] == 'edit':
-#             editID = request.form['editfield']
-#             newName = "('" + request.form['newname'] + "')"
-#             newStock = request.form['newstock']
-#             newPrice = request.form['newprice']
-#             newDescription = request.form['newdescription']
-#             cur.execute("UPDATE articles SET article_name=" + newName + ", stock_quantity=" +
-#                         newStock + ", price=" + newPrice + " WHERE article_number= " + editID + ";")
-#             if newDescription != "":
-#                 newDescription = "('" + request.form['newdescription'] + "')"
-#                 cur.execute("UPDATE article_description SET description=" +
-#                             newDescription + " WHERE description_number= " + editID + ";")
-#             db.connection.commit()
-#             cur.close()
-#             return redirect(url_for('admin.adminArticles'))
-
-#     return render_template("admin/articles.html", categories=categoryArray, articles=articlesArray
