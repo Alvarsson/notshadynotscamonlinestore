@@ -9,7 +9,6 @@ from app.admin.articleForms import ArticleForm,RemoveArticleForm
 import re
 
 
-artiklar = ["edward", "albin", "axel", "blabla", "hejhej"]
 
 def admin_required(func):
     @wraps(func)
@@ -27,7 +26,7 @@ def admin_required(func):
 @bp.route("/admin")
 @admin_required
 def admin():
-    return render_template("admin/overview.html", artiklar=artiklar)
+    return render_template("admin/overview.html")
 
 
 @bp.route("/admin/editArticle/<int:article_number>", methods=['POST', 'GET'])

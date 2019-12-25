@@ -8,25 +8,17 @@ from app.main.forms import AddToCartForm, CartForm, CommentForm, PurchaseCartFor
 import requests
 from app.main.utils import *
 
-
-
-
- #Static test input
-artiklar = [["Tall",3,239],["Ek",13,2329],["Lönn",31,2139]]
-#artiklar = [["edward",'Username:'],["albin", 'First name:'], ["axel", 'Sur name:'], ["blabla", 'Email:'], ["hejhej", 'Adress:']]
-testy = ['Username', 'First name', 'Sur name', 'Email', 'Adress', 'Password']
-#kategorier = ["Barrträd", "Lövträd", "Små träd","Stora träd","Gamer-träd","Wannabee-träd","Träd från kända serier"]
 @bp.app_errorhandler(404)
 def invalid_route(e):
     return render_template("404error.html", title="404"), 404
 
 
-
 @bp.route("/")
 def home():
     cur = db.connection.cursor()
-    cur.execute("SELECT * FROM categories INNER JOIN articles ON categories.category_id = articles.category_id GROUP BY categories.name")
-
+    cur.execute('''SELECT * FROM categories INNER JOIN articles
+                    ON categories.category_id = articles.category_id
+                    GROUP BY categories.name''')
     categories = []
     for i in cur.fetchall():
         category = (int(i[0]),i[1])
@@ -37,7 +29,12 @@ def home():
 @bp.route("/category/<int:category_id>")
 def category(category_id):
     cur = db.connection.cursor()
-    cur.execute("SELECT article_id,url,articles.name,price,categories.name FROM articles INNER JOIN categories ON articles.category_id=categories.category_id WHERE categories.category_id=" + str(category_id)) # Can't wait for that sweet, sweet SQL Injection right here.
+    cur.execute('''SELECT article_id, url, articles.name, price, categories.name
+                FROM articles INNER JOIN categories
+                ON articles.category_id=categories.category_id
+                WHERE categories.category_id = %s''',
+                (category_id,))
+
 
     result = list()
     images = list()
@@ -45,24 +42,28 @@ def category(category_id):
     for i in cur.fetchall():
         article_information = list(i)
         article_information[1] = is_url_image(article_information[1]) # Validates and sets default urls for articles.
-
         result.append(article_information)
-
     return render_template("kategori.html", artiklar = result,title=result[0][4],images = images)
 
 
 @bp.route("/article/<int:article_number>", methods=['GET', 'POST'])
 def article(article_number):
-    
-    
     cur = db.connection.cursor()
     
     #get data from artikel table
-    cur.execute("SELECT article_id, url, name, category_id, price, stock FROM articles WHERE article_id = " + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
+    cur.execute('''SELECT article_id, url, name, category_id, price, stock
+                FROM articles WHERE article_id = %s''', (article_number,))
     result = cur.fetchone() 
     
     #get data from comment table
-    cur.execute("SELECT comments.comment, users.user_name, comments.timestamp, comments.rating FROM comments INNER JOIN users ON comments.customer_id = users.customer_id WHERE comments.article_id ="+ str(article_number))
+    cur.execute('''SELECT comments.comment,
+                        users.user_name,
+                        comments.timestamp,
+                        comments.rating
+                        FROM comments INNER JOIN users
+                        ON comments.customer_id = users.customer_id 
+                        WHERE comments.article_id = %s''',
+                        (article_number,))
     allComments = list()
     for i in cur.fetchall():
         allComments.append(i)
@@ -94,14 +95,13 @@ def article(article_number):
         if current_user.is_authenticated != True:
             return redirect(url_for("login.login"))
 
-        customer_id = current_user.id
-
-        cur.execute("INSERT INTO comments (article_id, rating, comment, timestamp, customer_id) VALUES ("+
-                                         str(article_number)+
-                                         ", "+ str(commentForm.rating.data) +
-                                         ", '"+ str(commentForm.comment.data) +
-                                         "', NOW()," + str(customer_id) +
-                                         ");")
+        cur.execute('''INSERT INTO comments
+                    (article_id, rating, comment, timestamp, customer_id)
+                    VALUES (%s, %s, %s, NOW(), %s)''',
+                    (article_number,
+                    commentForm.rating.data,
+                    commentForm.comment.data,
+                    current_user.id))
         db.connection.commit()
         cur.close()
         return redirect(url_for("main.article",article_number=article_number))
@@ -111,16 +111,23 @@ def article(article_number):
 
         if addToCart.quantity.data > result[5]:
             flash('You cant order that many stuffs','danger')
-            return render_template("article.html", artiklar = result,kommentarer=allComments,picture=is_url_image(result[1]) ,addToCartForm = addToCart, commentForm = commentForm, desc = desc, average = average)
+            return render_template("article.html", artiklar = result,
+                    kommentarer = allComments,picture=is_url_image(result[1]),
+                    addToCartForm = addToCart,
+                    commentForm = commentForm,
+                    desc = desc,
+                    average = average)
 
         customer_id = current_user.id
         
-        cur.execute("INSERT IGNORE INTO cart (customer_id) VALUES ("+str(customer_id)+");") # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
+        cur.execute("INSERT IGNORE INTO cart (customer_id) VALUES (%s)",(customer_id,)) # SKAPA CART OM EJ FINNS, kasnke bör göra detta på ett annat ställe för "efficiency"
 
         #Funkar för att vi sätter en unique key som kopplar article_id med cart_id <3
-        cur.execute("INSERT INTO cart_items (article_id, cart_id, quantity) VALUES ("+
-                    str(result[0]) +", (SELECT cart_id FROM cart WHERE customer_id = "+ str(customer_id) +"), "
-                    + str(addToCart.quantity.data) +") ON DUPLICATE KEY UPDATE QUANTITY="+ str(addToCart.quantity.data) +";")
+        cur.execute('''INSERT INTO cart_items (article_id, cart_id, quantity)
+                    VALUES (%s, (SELECT cart_id FROM cart WHERE customer_id = %s), %s)
+                    ON DUPLICATE KEY UPDATE quantity = %s''',
+                    (result[0], customer_id, addToCart.quantity.data, 
+                        addToCart.quantity.data))
 
         db.connection.commit()
         cur.close()
@@ -136,7 +143,6 @@ def article(article_number):
 def user_debug():
     return str(current_user)
 
-#man kan nå någon annans order nu...
 @bp.route("/order/<int:order_id>", methods=['GET', 'POST'])
 @login_required
 def order(order_id):
@@ -149,7 +155,9 @@ def order(order_id):
 
     res = cur.fetchall()           
 
-    cur.execute('''SELECT SUM(order_items.quantity*order_items.price) from order_items inner join orders on orders.order_id=order_items.order_id where order_items.order_id=%s and orders.user_id=%s''', (order_id,current_user.id, ))
+    cur.execute('''SELECT SUM(order_items.quantity*order_items.price) FROM
+            order_items inner join orders ON orders.order_id = order_items.order_id
+            WHERE order_items.order_id = %s and orders.user_id = %s''', (order_id,current_user.id, ))
 
     output = cur.fetchone()[0]
 
@@ -201,27 +209,28 @@ def cart():
 
     customer_id = current_user.id
 
-    cur.execute("SELECT articles.name,cart_items.quantity,articles.price,articles.article_id,cart_items.cart_items_id " +
-                "FROM cart_items inner join articles on articles.article_id=cart_items.article_id "+
-                "WHERE cart_id=(SELECT cart_id FROM cart WHERE customer_id = "+str(customer_id) + "); ")
+    cur.execute('''SELECT articles.name,
+                    cart_items.quantity,
+                    articles.price,
+                    articles.article_id,
+                    cart_items.cart_items_id 
+                    FROM cart_items INNER JOIN articles
+                    ON articles.article_id = cart_items.article_id
+                    WHERE cart_id = (SELECT cart_id FROM cart
+                                    WHERE customer_id = %s)''', (customer_id,))
     #a = list()
     #[a.append(list(item)) for item in cur.fetchall()] #gör om allt till list of lists
 
     #Skapar ny order, lägger in alla cart_items i order_items med rätt värden. Tar bort cart.
-
     totalPrice = 0
-
     result = cur.fetchall()
     for item in result:
         #item.append(CartForm(item[1]))
 
         totalPrice += item[1] * item[2]
-
     db.connection.commit()
     cur.close()
-
-
-    return render_template("user_cart.html", artiklar = result,totalPrice = totalPrice)
+    return render_template("user_cart.html", artiklar = result, totalPrice = totalPrice)
 
 
 
@@ -229,11 +238,9 @@ def cart():
 @login_required
 def remove_item(article_number):
     cur = db.connection.cursor()
-    cur.execute("DELETE FROM cart_items WHERE cart_items_id=" + str(article_number)) # Can't wait for that sweet, sweet SQL Injection right here.
-
+    cur.execute("DELETE FROM cart_items WHERE cart_items_id= %s", (article_number,)) # Can't wait for that sweet, sweet SQL Injection right here.
     db.connection.commit()
     cur.close()
-
     return redirect(url_for('main.cart'))
 
 
@@ -242,19 +249,27 @@ def remove_item(article_number):
 def cart_to_order():
 
     cur = db.connection.cursor()
-    cur.execute("INSERT INTO orders (user_id) VALUES (" + str(current_user.id) + ");")
+    cur.execute("INSERT INTO orders (user_id) VALUES (%s)",(current_user.id,))
 
-    cur.execute("INSERT INTO order_items (order_id, article_id, quantity, price) " +
-        "SELECT LAST_INSERT_ID(), cart_items.article_id, cart_items.quantity, articles.price " +
-        "FROM cart_items LEFT JOIN articles " +
-        "ON cart_items.article_id = articles.article_id " +
-        "WHERE cart_id = (SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +");")
+    #cur.execute("INSERT INTO order_items (order_id, article_id, quantity, price) " +
+    #    "SELECT LAST_INSERT_ID(), cart_items.article_id, cart_items.quantity, articles.price " +
+    #    "FROM cart_items LEFT JOIN articles " +
+    #    "ON cart_items.article_id = articles.article_id " +
+    #    "WHERE cart_id = (SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +");")
+    cur.execute('''INSERT INTO order_items (order_id, article_id, quantity, price)
+            SELECT LAST_INSERT_ID(),
+            cart_items.article_id,
+            cart_items.quantity,
+            articles.price
+            FROM cart_items LEFT JOIN articles
+            ON cart_items.article_id = articles.article_id
+            WHERE cart_id = (SELECT cart_id FROM cart WHERE customer_id = %s)''',
+            (current_user.id,))
 
-    cur.execute("SELECT cart_id FROM cart WHERE customer_id ="+ str(current_user.id) +";")
+    cur.execute("SELECT cart_id FROM cart WHERE customer_id = %s", (current_user.id,))
     usrCartID = cur.fetchone()
     
-    cur.execute("DELETE FROM cart WHERE " +
-        "cart_id ="+ str(usrCartID[0]) +";")
+    cur.execute("DELETE FROM cart WHERE cart_id = %s", (usrCartID[0],))
 
     cur.connection.commit()
     cur.close()
