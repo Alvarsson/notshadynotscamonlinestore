@@ -35,6 +35,8 @@ CREATE TABLE `articles` (
   KEY `fk_category_idx` (`category_id`),
   CONSTRAINT `fk_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+-- ADD FULLTEXT INDEX FOR ARTICLE NAME
+ALTER TABLE articles ADD FULLTEXT INDEX ft_name (name);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

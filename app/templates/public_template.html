@@ -1,11 +1,9 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Import the Bootstrap stylesheet -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -14,7 +12,6 @@
 
     <title>{% block title %}{% endblock %}</title>
 </head>
-
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
         <a class="navbar-brand" href="/">NOTSCAM</a>
@@ -22,8 +19,10 @@
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarNav">
+        <div id="search_div" class="autocomplete w-25 mx-auto">
+            <input id="myInput" class="form-control" type="text" placeholder="Search" aria-label="Search">
+        </div>
             <ul class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
                 <li class="nav-item">
@@ -48,11 +47,7 @@
                 {% endif %}
             </ul>
         </div>
-
-
-
     </nav>
-
 <div class="container-fluid">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -73,8 +68,6 @@
         crossorigin="anonymous"></script>
 
     {% block script %}{% endblock %}
-
-
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </body>
-
 </html>
