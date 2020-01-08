@@ -263,7 +263,7 @@ def cart_to_order():
 
     #check if we can sell the amount of stuff the user wants.
     cur.execute('''SELECT articles.article_id,cart_items.quantity,articles.stock 
-            FROM finalfinal.cart_items left join finalfinal.articles 
+            FROM cart_items left join articles 
             on articles.article_id=cart_items.article_id 
             where cart_id=(select cart_id from cart where customer_id=%s)''', (current_user.id,))
 
