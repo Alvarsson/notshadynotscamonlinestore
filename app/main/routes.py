@@ -28,9 +28,9 @@ def search():
 @bp.route("/")
 def home():
     cur = db.connection.cursor()
-    cur.execute('''SELECT * FROM categories INNER JOIN articles
+    cur.execute('''SELECT categories.category_id, categories.name FROM categories INNER JOIN articles
                     ON categories.category_id = articles.category_id
-                    GROUP BY categories.name''')
+                    GROUP BY categories.name, categories.category_id''')
     categories = []
     for i in cur.fetchall():
         category = (int(i[0]),i[1])
