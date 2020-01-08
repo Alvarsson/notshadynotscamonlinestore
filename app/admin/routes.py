@@ -134,16 +134,6 @@ def adminArticles():
         else:
             cur.execute("DELETE FROM articles WHERE article_id= %s", (articleToRemove,))
 
-
-        #Split the string at every white-space character:
-
-        #str = "The rain in Spain"
-        
-        # if (x):
-        #     print("YES! We have a match!")
-        # else:
-        #     print("No match")
-
         db.connection.commit()
         cur.close()
         return redirect(url_for('admin.adminArticles'))
@@ -175,7 +165,6 @@ def adminCategories():
         return redirect(url_for('admin.adminCategories'))
 
     if removeCategory.validate_on_submit() and removeCategory.submitRemove.data:
-        print("remoive")
         cur.execute("DELETE FROM categories WHERE category_id= %s", (removeCategory.category_id.data,))
         db.connection.commit()
         cur.close()
@@ -194,6 +183,25 @@ def adminCategories():
             addCategoryForm = addCategory,
             removeCategoryForm = removeCategory,
             editCategoryForm = editCategory)
+
+
+
+@bp.route("/admin/orders", methods=['POST', 'GET'])
+@admin_required
+def adminOrders():
+    # Fetchar data från nuvarande kategoritabell och skriver ut på sidan
+    cur = db.connection.cursor()
+    cur.execute("SELECT * FROM orders ORDER BY order_id ASC;")
+    ordersArray = []
+    for i in cur.fetchall():
+        ordersArray.append(i)
+
+    
+
+   
+    return render_template("admin/orders.html",
+            orders = ordersArray)
+
 
 
 @bp.route("/admin/users", methods=['POST', 'GET'])
@@ -215,3 +223,11 @@ def adminUsers():
             return redirect(url_for('admin.adminUsers'))
     return render_template("admin/users.html", users=userArray)
 
+@bp.route("/admin/order/cancel/<int:order_id>", methods=['GET','POST'])
+@admin_required
+def cancel_order(order_id):
+    cur = db.connection.cursor()
+    cur.execute("DELETE FROM orders WHERE order_id= %s", (order_id,)) 
+    db.connection.commit()
+    cur.close()
+    return redirect(url_for('admin.adminOrders'))
