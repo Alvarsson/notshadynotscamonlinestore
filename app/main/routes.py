@@ -273,7 +273,9 @@ def cart_to_order():
 
     cur.execute("SELECT cart_id FROM cart WHERE customer_id = %s", (current_user.id,))
     usrCartID = cur.fetchone()
-    cur.execute("DELETE FROM cart WHERE cart_id = %s", (usrCartID[0],))
+    if usrCartID != None:
+        cur.execute("DELETE FROM cart WHERE cart_id = %s", (usrCartID[0],))
+    
 
     cur.connection.commit()
     cur.close()
