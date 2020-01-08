@@ -196,9 +196,6 @@ def adminOrders():
     for i in cur.fetchall():
         ordersArray.append(i)
 
-    
-
-   
     return render_template("admin/orders.html",
             orders = ordersArray)
 
