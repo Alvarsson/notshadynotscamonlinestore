@@ -259,6 +259,28 @@ def remove_item(article_number):
 def cart_to_order():
 
     cur = db.connection.cursor()
+
+
+    #check if we can sell the amount of stuff the user wants.
+    cur.execute('''SELECT articles.article_id,cart_items.quantity,articles.stock 
+            FROM cart_items left join articles 
+            on articles.article_id=cart_items.article_id 
+            where cart_id=(select cart_id from cart where customer_id=%s)''', (current_user.id,))
+
+    for row in cur.fetchall():
+        if row[1] > row[2]:
+            flash('One or more items in your shopping cart cant be processed. Out of stock!','danger')
+            return redirect(url_for('main.cart'))
+        
+    print("check passed, now lets fix the amounts!")
+
+    #updates the article stock.
+    cur.execute('''UPDATE articles join cart_items 
+            ON articles.article_id = cart_items.article_id 
+            SET articles.stock = articles.stock-cart_items.quantity 
+            WHERE cart_id=(select cart_id from cart where customer_id=%s)''', (current_user.id,))
+
+
     cur.execute("INSERT INTO orders (user_id) VALUES (%s)",(current_user.id,))
 
     cur.execute('''INSERT INTO order_items (order_id, article_id, quantity, price)
