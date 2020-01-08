@@ -37,6 +37,8 @@ CREATE TABLE `articles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 -- ADD FULLTEXT INDEX FOR ARTICLE NAME
 ALTER TABLE articles ADD FULLTEXT INDEX ft_name (name);
+-- ADD non negative stock constraint
+ALTER TABLE articles ADD CONSTRAINT nonnegative_stock CHECK (stock >= 0);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
