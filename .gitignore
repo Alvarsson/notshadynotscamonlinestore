@@ -33,6 +33,7 @@ __pycache__/
 .DS_Store
 .Python
 venv/
+.venv/
 build/
 bin/
 develop-eggs/
